@@ -30,7 +30,11 @@
   "homepage": "https://github.com/LennartH/amazer-ts#readme",
   "devDependencies": {
     "@types/node": "^12.11.1",
+    "@types/yargs": "^13.0.3",
     "ts-node": "^8.4.1",
     "typescript": "^3.6.4"
+  },
+  "dependencies": {
+    "yargs": "^14.2.0"
   }
 }
