@@ -1,6 +1,7 @@
 import { Arguments } from "./main";
 import fs from "fs";
 import yaml from "js-yaml";
+import { Area } from "./domain";
 
 export class Config {
     static fromArgs(args: Arguments): Config {
@@ -51,7 +52,12 @@ export class Config {
 export class Amazer {
     constructor(readonly config: Config) { }
 
-    generate() {
-
+    generate(): Area {
+        return new Area(this.config.size);
     }
+}
+
+// TODO Builder Pattern for Amazer
+export function amazer(config: Config): Amazer {
+    return new Amazer(config);
 }

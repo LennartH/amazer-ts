@@ -1,5 +1,7 @@
 import yargs from "yargs";
-import { Config } from "./lib";
+import { Config, amazer } from "./lib";
+import { parseSize } from "./util";
+import { Tile } from "./domain";
 
 const version = "0.1.0"
 
@@ -9,11 +11,6 @@ export interface Arguments {
     size?: [number, number],
     width?: number,
     height?: number
-}
-
-function parseSize(size: string): [number, number] {
-    let parts: string[] = size.split("x");
-    return [Number(parts[0]), Number(parts[1])]
 }
 
 const cli = yargs
@@ -60,4 +57,8 @@ if (process.argv.length <= 2) {
     let args: Arguments = cli.argv;
     let config = Config.fromArgs(args);
     console.log(config);
+    let area = amazer(config).generate();
+
+    area.set(1, 1, Tile.passable("Floor"))
+    console.log(area.get(1, 1).symbol);
 }
