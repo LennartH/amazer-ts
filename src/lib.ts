@@ -1,7 +1,8 @@
 import { Arguments } from "./main";
 import fs from "fs";
 import yaml from "js-yaml";
-import { Area } from "./domain";
+import { Size, Area } from "./domain";
+import { AreaGenerator, RecursiveBacktracker } from "./generator";
 
 export class Config {
     static fromArgs(args: Arguments): Config {
@@ -10,7 +11,8 @@ export class Config {
             return Config.fromFile(args.config);
         } else {
             return new Config(
-                Config.sizeFromArgs(args)
+                Config.sizeFromArgs(args),
+                args.generator || RecursiveBacktracker  // TODO How to resolve AreaGenerator | undefined here?
             );
         }
     }
@@ -34,18 +36,19 @@ export class Config {
         return Config.fromArgs(args);
     }
     
-    private static sizeFromArgs(args: Arguments): [number, number] {
+    private static sizeFromArgs(args: Arguments): Size {
         if (args.size) {
-            return args.size;
+            return {width: args.size[0], height: args.size[1]};
         } else if (args.width && args.height) {
-            return [args.width, args.height];
+            return {width: args.width, height: args.height};
         } else {
             throw new Error("The area size could not be determined");
         }
     }
     
     constructor(
-        readonly size: [number, number]
+        readonly size: Size,
+        readonly generator: AreaGenerator
     ) { }
 }
 
@@ -53,7 +56,7 @@ export class Amazer {
     constructor(readonly config: Config) { }
 
     generate(): Area {
-        return new Area(this.config.size);
+        return this.config.generator(this.config.size);
     }
 }
 

@@ -1,3 +1,9 @@
+export interface Size {
+    width: number;
+    height: number;
+    [name: string]: any;
+}
+
 export class Tile {
     static readonly Empty = Tile.impassable("Empty", " ");
 
@@ -20,19 +26,19 @@ export class Tile {
     }
 
     get symbol(): string {
-        return this._symbol || this.name[0];
+        return this._symbol || this.name.charAt(0);
     }
 }
 
 export class Area {
     readonly tiles: Tile[][];
 
-    constructor(size: [number, number]) {
+    constructor(size: Size, initialTile=Tile.Empty) {
         this.tiles = [];
-        for (let x = 0; x < size[0]; x++) {
+        for (let x = 0; x < size.width; x++) {
             this.tiles[x] = []
-            for (let y = 0; y < size[1]; y++) {
-                this.tiles[x][y] = Tile.Empty;
+            for (let y = 0; y < size.height; y++) {
+                this.tiles[x][y] = initialTile;
             }
         }
     }

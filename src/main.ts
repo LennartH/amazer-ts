@@ -1,16 +1,17 @@
 import yargs from "yargs";
 import { Config, amazer } from "./lib";
 import { parseSize } from "./util";
-import { Tile } from "./domain";
+import { AreaGenerator, generator, RecursiveBacktracker } from "./generator";
 
 const version = "0.1.0"
 
 export interface Arguments {
-    _?: string[],
     config?: string,
     size?: [number, number],
     width?: number,
-    height?: number
+    height?: number,
+    generator?: AreaGenerator,
+    [name: string]: any
 }
 
 const cli = yargs
@@ -46,6 +47,12 @@ const cli = yargs
             implies: "w",
             conflicts: ["size"],
             requiresArg: true
+        },
+        g: {
+            alias: "generator",
+            coerce: generator,
+            describe: "The name of the area generator to use",
+            default: RecursiveBacktracker.name.charAt(0).toUpperCase() + RecursiveBacktracker.name.slice(1)
         }
     });
 
@@ -55,10 +62,9 @@ if (process.argv.length <= 2) {
     process.exit(1);
 } else {
     let args: Arguments = cli.argv;
+    console.log(args);
     let config = Config.fromArgs(args);
     console.log(config);
     let area = amazer(config).generate();
-
-    area.set(1, 1, Tile.passable("Floor"))
-    console.log(area.get(1, 1).symbol);
+    console.log(area)
 }
