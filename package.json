@@ -9,7 +9,7 @@
   "scripts": {
     "start": "ts-node src/main.ts",
     "create": "npm run build && npm run test",
-    "build": "tsc -p .",
+    "build": "tsc --sourceMap false -p .",
     "test": "echo \"Error: no test specified\" && exit 1",
     "refresh": "rm -rf ./node_modules ./package-lock.json && npm install"
   },
@@ -29,12 +29,20 @@
   },
   "homepage": "https://github.com/LennartH/amazer-ts#readme",
   "devDependencies": {
+    "@types/js-yaml": "^3.12.1",
     "@types/node": "^12.11.1",
     "@types/yargs": "^13.0.3",
+    "@typescript-eslint/eslint-plugin": "^2.4.0",
+    "@typescript-eslint/parser": "^2.4.0",
+    "eslint": "^6.5.1",
+    "eslint-config-google": "^0.14.0",
     "ts-node": "^8.4.1",
     "typescript": "^3.6.4"
   },
   "dependencies": {
     "yargs": "^14.2.0"
+  },
+  "optionalDependencies": {
+    "js-yaml": "^3.13.1"
   }
 }

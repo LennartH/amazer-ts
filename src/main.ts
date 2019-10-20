@@ -1,13 +1,15 @@
 import yargs from "yargs";
+import { Config } from "./lib";
 
 const version = "0.1.0"
 
-// interface Arguments {
-//     config: string,
-//     size: [number, number],
-//     width: number,
-//     height: number
-// }
+export interface Arguments {
+    _?: string[],
+    config?: string,
+    size?: [number, number],
+    width?: number,
+    height?: number
+}
 
 function parseSize(size: string): [number, number] {
     let parts: string[] = size.split("x");
@@ -16,6 +18,7 @@ function parseSize(size: string): [number, number] {
 
 const cli = yargs
     .version(version)
+    .showHelpOnFail(true)
     .options({
         c: {
             alias: "config",
@@ -25,6 +28,7 @@ const cli = yargs
         },
         s: {
             alias: "size",
+            type: "string",
             coerce: parseSize,
             describe: "The areas size as WIDTHxHEIGHT",
             conflicts: ["width", "height"],
@@ -48,6 +52,12 @@ const cli = yargs
         }
     });
 
-const argv = cli.argv
-
-console.log(argv)
+if (process.argv.length <= 2) {
+    console.log("No arguments where given")
+    cli.showHelp();
+    process.exit(1);
+} else {
+    let args: Arguments = cli.argv;
+    let config = Config.fromArgs(args);
+    console.log(config);
+}
