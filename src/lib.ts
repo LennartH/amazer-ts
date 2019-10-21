@@ -1,8 +1,9 @@
 import { Arguments } from "./main";
 import fs from "fs";
 import yaml from "js-yaml";
-import { Size, Area } from "./domain";
-import { AreaGenerator, RecursiveBacktracker } from "./generator";
+import { Area } from "./domain/area";
+import { Size } from "./domain/common";
+import { AreaGenerator, RecursiveBacktracker } from "./generator/base";
 
 export class Config {
     static fromArgs(args: Arguments): Config {

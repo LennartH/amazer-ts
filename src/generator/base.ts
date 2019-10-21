@@ -1,12 +1,15 @@
-import { Area, Size } from "./domain";
+import { Area } from "../domain/area";
+import { Size } from "../domain/common";
+import { RecursiveBacktracker } from "./simple";
+
+export { RecursiveBacktracker } from "./simple";
+
 
 export interface AreaGenerator {
     (size: Size): Area;
 }
 
 const generators: AreaGenerator[] = []
-
-export const RecursiveBacktracker: AreaGenerator = recursiveBacktracker;
 generators.push(RecursiveBacktracker);
 
 export function generator(name: string): AreaGenerator | undefined {
@@ -14,10 +17,4 @@ export function generator(name: string): AreaGenerator | undefined {
     return generators.find(generator => {
         return generator.name == cleanName;
     });
-}
-
-function recursiveBacktracker(size: Size): Area {
-    const area = new Area(size);
-    // TODO Implement me
-    return area;
 }

@@ -1,8 +1,4 @@
-export interface Size {
-    width: number;
-    height: number;
-    [name: string]: any;
-}
+import { Size } from "./common";
 
 export class Tile {
     static readonly Empty = Tile.impassable("Empty", " ");
