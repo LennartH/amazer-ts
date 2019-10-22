@@ -1,6 +1,6 @@
 import yargs from "yargs";
 import { Config, amazer } from "./lib";
-import { parseSize } from "./util";
+import { parseSize, area_to_string } from "./util";
 import { AreaGenerator, generator, RecursiveBacktracker } from "./generator/base";
 
 const version = "0.1.0"
@@ -62,9 +62,7 @@ if (process.argv.length <= 2) {
     process.exit(1);
 } else {
     let args: Arguments = cli.argv;
-    console.log(args);
     let config = Config.fromArgs(args);
-    console.log(config);
     let area = amazer(config).generate();
-    console.log(area)
+    console.log(area_to_string(area))
 }

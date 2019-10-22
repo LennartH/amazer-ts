@@ -1,7 +1,7 @@
-import { Size } from "./common";
+import { Size, Direction } from "./common";
 
 export class Tile {
-    static readonly Empty = Tile.impassable("Empty", " ");
+    static readonly Empty = Tile.impassable("Empty", "╳");
 
     private readonly _symbol?: string;
 
@@ -38,6 +38,14 @@ export class Area {
             }
         }
     }
+
+    get width(): number {
+        return this.tiles.length;
+    }
+
+    get height(): number {
+        return this.tiles[0].length;
+    }
     
     get(x: number, y: number): Tile {
         return this.tiles[x][y];
@@ -46,4 +54,24 @@ export class Area {
     set(x: number, y: number, tile: Tile) {
         this.tiles[x][y] = tile;
     }
+
+    contains(x: number, y: number): boolean {
+        return x >= 0 && x < this.width && y >= 0 && y < this.height;
+    }
+
+    neighbours(x: number, y: number): Neighbours {
+        let neighbours: Neighbours = {};
+        for (let direction of Direction.values()) {
+            let newX = x + direction.dx;
+            let newY = y + direction.dy;
+            if (this.contains(newX, newY)) {
+                neighbours[direction.name] = this.get(newX, newY);
+            }
+        }
+        return neighbours;
+    }
+}
+
+export interface Neighbours {
+    [direction: string]: Tile
 }

@@ -10,8 +10,8 @@
     "start": "ts-node src/main.ts",
     "create": "npm run build && npm run test",
     "build": "tsc --sourceMap false -p .",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "refresh": "rm -rf ./node_modules ./package-lock.json && npm install"
+    "test": "jest",
+    "coverage": "jest --coverage"
   },
   "repository": {
     "type": "git",
@@ -29,17 +29,22 @@
   },
   "homepage": "https://github.com/LennartH/amazer-ts#readme",
   "devDependencies": {
+    "@types/jest": "^24.0.19",
     "@types/js-yaml": "^3.12.1",
+    "@types/lodash": "^4.14.144",
     "@types/node": "^12.11.1",
     "@types/yargs": "^13.0.3",
     "@typescript-eslint/eslint-plugin": "^2.4.0",
     "@typescript-eslint/parser": "^2.4.0",
     "eslint": "^6.5.1",
     "eslint-config-google": "^0.14.0",
+    "jest": "^24.9.0",
+    "ts-jest": "^24.1.0",
     "ts-node": "^8.4.1",
     "typescript": "^3.6.4"
   },
   "dependencies": {
+    "lodash": "^4.17.15",
     "yargs": "^14.2.0"
   },
   "optionalDependencies": {

@@ -3,9 +3,15 @@ import fs from "fs";
 import yaml from "js-yaml";
 import { Area } from "./domain/area";
 import { Size } from "./domain/common";
-import { AreaGenerator, RecursiveBacktracker } from "./generator/base";
+import { AreaGenerator } from "./generator/base";
 
 export class Config {
+
+    constructor(
+        readonly size: Size,
+        readonly generator: AreaGenerator
+    ) { }
+
     static fromArgs(args: Arguments): Config {
         if (args.config) {
             // TODO Handle/Merge other args
@@ -13,7 +19,7 @@ export class Config {
         } else {
             return new Config(
                 Config.sizeFromArgs(args),
-                args.generator || RecursiveBacktracker  // TODO How to resolve AreaGenerator | undefined here?
+                args.generator!
             );
         }
     }
@@ -21,7 +27,7 @@ export class Config {
     static fromFile(path: string): Config {
         let [fileType] = path.split(".").slice(-1);
         let fileContent: string = fs.readFileSync(path, "utf8");
-        let args: Arguments = {};
+        let args: Arguments;
         switch (fileType) {
             case "yml":
             case "yaml":
@@ -46,11 +52,6 @@ export class Config {
             throw new Error("The area size could not be determined");
         }
     }
-    
-    constructor(
-        readonly size: Size,
-        readonly generator: AreaGenerator
-    ) { }
 }
 
 export class Amazer {
