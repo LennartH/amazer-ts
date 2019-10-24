@@ -1,3 +1,7 @@
 {
-    "eslint.enable": true
+    "eslint.enable": true,
+    
+    "jest.pathToJest": "npm run jest:watchAll --",
+    "jest.runAllTestsFirst": true,
+    "jest.showCoverageOnLoad": true
 }

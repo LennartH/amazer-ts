@@ -1,3 +1,5 @@
+import fs from "fs";
+import yaml from "js-yaml";
 import { Area } from "./domain/area";
 
 export function parseSize(size: string): [number, number] {
@@ -5,7 +7,7 @@ export function parseSize(size: string): [number, number] {
     return [Number(parts[0]), Number(parts[1])]
 }
 
-export function area_to_string(area: Area): string {
+export function areaToString(area: Area): string {
     let row_strings: string[] = [];
     row_strings.push("┏" + "━".repeat(area.width * 2 + 1) + "┓");
     for (let y = 0; y < area.height; y++) {
@@ -17,4 +19,22 @@ export function area_to_string(area: Area): string {
     }
     row_strings.push("┗" + "━".repeat(area.width * 2 + 1) + "┛");
     return row_strings.join("\n");
+}
+
+export function readStructuredFile(filePath: string): any {
+    let [fileType] = filePath.split(".").slice(-1);
+    let fileContent: string = fs.readFileSync(filePath, "utf8");
+    let result: any;
+    switch (fileType) {
+        case "yml":
+        case "yaml":
+            result = yaml.safeLoad(fileContent);
+            break;
+        case "json":
+            result = JSON.parse(fileContent);
+            break;
+        default:
+            throw new Error(`Unable to read file type ${fileType}`);
+    }
+    return result;
 }

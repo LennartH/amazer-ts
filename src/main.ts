@@ -1,6 +1,6 @@
 import yargs from "yargs";
 import { Config, amazer } from "./lib";
-import { parseSize, area_to_string } from "./util";
+import { parseSize, areaToString } from "./util";
 import { AreaGenerator, generator, RecursiveBacktracker } from "./generator/base";
 
 const version = "0.1.0"
@@ -11,6 +11,7 @@ export interface Arguments {
     width?: number,
     height?: number,
     generator?: AreaGenerator,
+    tileSet?: string,
     [name: string]: any
 }
 
@@ -53,6 +54,12 @@ const cli = yargs
             coerce: generator,
             describe: "The name of the area generator to use",
             default: RecursiveBacktracker.name.charAt(0).toUpperCase() + RecursiveBacktracker.name.slice(1)
+        },
+        t: {
+            alias: "tile-set",
+            type: "string",
+            describe: "The tile set file (JSON or Yaml)",
+            requiresArg: true
         }
     });
 
@@ -64,5 +71,5 @@ if (process.argv.length <= 2) {
     let args: Arguments = cli.argv;
     let config = Config.fromArgs(args);
     let area = amazer(config).generate();
-    console.log(area_to_string(area))
+    console.log(areaToString(area));
 }

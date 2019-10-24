@@ -1,6 +1,7 @@
 import { Tile, Neighbours } from "./area";
 import { Direction } from "./common";
 import _ from "lodash";
+import { readStructuredFile } from "../util";
 
 export class TileMask {
     static readonly Any = new TileMask({});
@@ -40,6 +41,24 @@ export class TileSet {
         this.tiles = tiles || [];
     }
 
+    static fromFile(filePath: string): TileSet {
+        let content = readStructuredFile(filePath);
+        if (!(content instanceof Array)) {
+            throw new Error("Error reading the file as tile set. Must be a list of tiles with optional mask.")
+        }
+        
+        // TODO Extract fromObject method
+        let tileSet = new TileSet();
+        for (let entry of content) {
+            let tileWithMask: TileWithMask = {
+                tile: new Tile(entry.name, entry.passable, entry.symbol),
+                mask: TileMask.Any  // TODO Read from file (all tiles must be known to parse mask string)
+            }
+            tileSet.add(tileWithMask);
+        }
+        return tileSet;
+    }
+
     add(tile: TileWithMask) {
         this.tiles.push(tile);
     }
@@ -55,6 +74,4 @@ export class TileSet {
     getMatching(neighbours: Neighbours): Tile[] {
         return this.tiles.filter(t => t.mask.matchesAll(neighbours)).map(t => t.tile);
     }
-
-    // TODO Read TileSet from object/file
 }

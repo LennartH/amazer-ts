@@ -1,15 +1,16 @@
 import { Arguments } from "./main";
-import fs from "fs";
-import yaml from "js-yaml";
 import { Area } from "./domain/area";
 import { Size } from "./domain/common";
 import { AreaGenerator } from "./generator/base";
+import { TileSet } from "./domain/tileset";
+import { readStructuredFile } from "./util";
 
 export class Config {
 
     constructor(
         readonly size: Size,
-        readonly generator: AreaGenerator
+        readonly generator: AreaGenerator,
+        readonly tileSet: TileSet
     ) { }
 
     static fromArgs(args: Arguments): Config {
@@ -17,28 +18,17 @@ export class Config {
             // TODO Handle/Merge other args
             return Config.fromFile(args.config);
         } else {
+            let tileSetFile = args.tileSet || "resources/simple-tileset.yml"
             return new Config(
                 Config.sizeFromArgs(args),
-                args.generator!
+                args.generator!,
+                TileSet.fromFile(tileSetFile)
             );
         }
     }
 
     static fromFile(path: string): Config {
-        let [fileType] = path.split(".").slice(-1);
-        let fileContent: string = fs.readFileSync(path, "utf8");
-        let args: Arguments;
-        switch (fileType) {
-            case "yml":
-            case "yaml":
-                args = yaml.safeLoad(fileContent) as Arguments;
-                break;
-            case "json":
-                args = JSON.parse(fileContent);
-                break;
-            default:
-                throw new Error(`Unknown file type ${fileType}`);
-        }
+        let args: Arguments = readStructuredFile(path);
         args.config = undefined;
         return Config.fromArgs(args);
     }
@@ -58,7 +48,7 @@ export class Amazer {
     constructor(readonly config: Config) { }
 
     generate(): Area {
-        return this.config.generator(this.config.size);
+        return this.config.generator(this.config);
     }
 }
 
