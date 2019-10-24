@@ -3,5 +3,21 @@
     
     "jest.pathToJest": "npm run jest:watchAll --",
     "jest.runAllTestsFirst": true,
-    "jest.showCoverageOnLoad": true
+    "jest.showCoverageOnLoad": true,
+
+    "todo-tree.highlights.defaultHighlight": {
+        "type": "text",
+        "fontWeight": "bold",
+        "foreground": "#33ccff"
+    },
+    "todo-tree.highlights.customHighlight": {
+        "TODO": {
+            "iconColour": "yellow"
+        },
+        "FIXME": {
+            "foreground": "#e62e00",
+            "icon": "alert",
+            "iconColour": "red"
+        }
+    }
 }
