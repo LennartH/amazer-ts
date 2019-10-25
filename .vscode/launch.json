@@ -9,7 +9,7 @@
             "request": "launch",
             "name": "Amazer",
             "program": "${workspaceFolder}/src/main.ts",
-            "args": ["-c", "test.yml"],
+            "args": ["-s", "5x5"],
             "preLaunchTask": "tsc: build - tsconfig.json",
             "outFiles": [
                 "${workspaceFolder}/dist/**/*.js"

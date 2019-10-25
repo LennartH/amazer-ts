@@ -22,9 +22,7 @@ export class TileMask {
         if (allowedNeighbours instanceof Tile) {
             return _.isEqual(tile, allowedNeighbours);
         } else {
-            return allowedNeighbours === undefined ||
-                   allowedNeighbours.length == 0 ||
-                   _.some(allowedNeighbours, tile)
+            return allowedNeighbours === undefined || allowedNeighbours.length == 0 || _.some(allowedNeighbours, tile)
         }
     }
 }
@@ -35,10 +33,10 @@ export interface TileWithMask {
 }
 
 export class TileSet {
-    private readonly tiles: TileWithMask[];
+    private readonly _tiles: TileWithMask[];
 
     constructor(tiles?: TileWithMask[]) {
-        this.tiles = tiles || [];
+        this._tiles = tiles || [];
     }
 
     static fromFile(filePath: string): TileSet {
@@ -59,19 +57,19 @@ export class TileSet {
         return tileSet;
     }
 
+    get tiles(): ReadonlyArray<Tile> {
+        return this._tiles.map(t => t.tile);
+    }
+
     add(tile: TileWithMask) {
-        this.tiles.push(tile);
+        this._tiles.push(tile);
     }
 
-    remove(tile: Tile) {
-        this.tiles.forEach((t, i) => {
-            if (_.isEqual(t.tile, tile)) {
-                this.tiles.splice(i, 1)
-            }
-        });
-    }
-
-    getMatching(neighbours: Neighbours): Tile[] {
-        return this.tiles.filter(t => t.mask.matchesAll(neighbours)).map(t => t.tile);
+    getMatching(neighbours: Neighbours, predicate?: (t: Tile) => boolean): Tile[] {
+        // TODO Throw error if no tile matches
+        if (predicate === undefined) {
+            predicate = _ => true;
+        }
+        return this._tiles.filter(t => t.mask.matchesAll(neighbours)).map(t => t.tile).filter(predicate);
     }
 }
