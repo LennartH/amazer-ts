@@ -13,7 +13,7 @@ export function areaToString(area: Area): string {
     for (let y = 0; y < area.height; y++) {
         let tile_strings: string[] = [];
         for (let x = 0; x < area.width; x++) {
-            tile_strings.push(area.get(x, y).symbol);
+            tile_strings.push(area.get({x: x, y: y}).symbol);
         }
         // FIXME Joining with space breaks the maze
         row_strings.push("┃ " + tile_strings.join(" ") + " ┃");

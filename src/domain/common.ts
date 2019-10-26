@@ -1,7 +1,29 @@
+import _ from "lodash";
+
 export interface Size {
     width: number;
     height: number;
-    [name: string]: any;
+}
+
+export interface Point {
+    x: number;
+    y: number;
+}
+
+export class Vector implements Point {
+    constructor(readonly x: number, readonly y: number) { }
+
+    static from(point: Point): Vector {
+        return new Vector(point.x, point.y);
+    }
+
+    static random(size: Size): Vector {
+        return new Vector(_.random(size.width - 1), _.random(size.height - 1))
+    }
+
+    translate(direction: {dx?: number, dy?: number}, times=1): Vector {
+        return new Vector(this.x + (direction.dx || 0) * times, this.y + (direction.dy || 0) * times);
+    }
 }
 
 export class Direction {

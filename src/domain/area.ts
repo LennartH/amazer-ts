@@ -1,4 +1,4 @@
-import { Size, Direction } from "./common";
+import { Size, Direction, Point, Vector } from "./common";
 
 export class Tile {
     static readonly Empty = Tile.impassable("Empty", "╳");
@@ -46,26 +46,51 @@ export class Area {
     get height(): number {
         return this.tiles[0].length;
     }
+
+    get size(): Size {
+        return this;
+    }
+
+    *points(): Iterable<Vector> {
+        for (let x = 0; x < this.width; x++) {
+            for (let y = 0; y < this.height; y++) {
+                yield new Vector(x, y);
+            }
+        }
+    }
+
+    *cells(): Iterable<[Tile, Vector]> {
+        for (let p of this.points()) {
+            yield [this.get(p), p];
+        }
+    }
+
+    forEach(consumer: (t: Tile, p?: Vector) => void) {
+        for (let [t, p] of this.cells()) {
+            consumer(t, p);
+        }
+    }
     
-    get(x: number, y: number): Tile {
-        return this.tiles[x][y];
+    get(point: Point): Tile {
+        return this.tiles[point.x][point.y];
     }
 
-    set(x: number, y: number, tile: Tile) {
-        this.tiles[x][y] = tile;
+    set(point: Point, tile: Tile) {
+        this.tiles[point.x][point.y] = tile;
     }
 
-    contains(x: number, y: number): boolean {
+    contains(point: Point): boolean {
+        const x = point.x;
+        const y = point.y;
         return x >= 0 && x < this.width && y >= 0 && y < this.height;
     }
 
-    neighbours(x: number, y: number): Neighbours {
+    neighbours(point: Vector): Neighbours {
         let neighbours: Neighbours = {};
         for (let direction of Direction.values()) {
-            let newX = x + direction.dx;
-            let newY = y + direction.dy;
-            if (this.contains(newX, newY)) {
-                neighbours[direction.name] = this.get(newX, newY);
+            let newPoint = point.translate(direction);
+            if (this.contains(newPoint)) {
+                neighbours[direction.name] = this.get(newPoint);
             }
         }
         return neighbours;

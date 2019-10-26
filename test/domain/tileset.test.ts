@@ -26,9 +26,7 @@ test("tile set without masks", () => {
     })
 
     let expectedMatches = [floor, wall];
-    for (let x = 0; x < area.width; x++) {
-        for (let y = 0; y < area.height; y++) {
-            expect(tileSet.getMatching(area.neighbours(x, y))).toEqual(expectedMatches);
-        }
+    for (let p of area.points()) {
+        expect(tileSet.getMatching(area.neighbours(p))).toEqual(expectedMatches);
     }
 });
