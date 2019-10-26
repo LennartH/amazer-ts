@@ -1,33 +1,28 @@
 import _ from "lodash";
 import { Area } from "../domain/area";
-import { AreaGenerator, GeneratorConfig } from "./base";
+import { AreaGenerator, GeneratorConfig, VisitedTile } from "./base";
 import { Direction, Vector } from "../domain/common";
 
 
 export const RecursiveBacktracker: AreaGenerator = recursiveBacktracker;
 
-// TODO Cleanup
 function recursiveBacktracker(config: GeneratorConfig): Area {
     const tileSet = config.tileSet;
     const passable = tileSet.passables[0];
     const impassable = tileSet.impassables[0];
     const area = new Area(config.size, impassable);
-    let walkableDirections = _.shuffle([Direction.Up, Direction.Right, Direction.Down, Direction.Left]);  // TODO this shouldn't be hardcoded
-    let stack: Vector[] = [Vector.random(area.size)];
+    let stack: VisitedTile[] = [new VisitedTile(Vector.random(area.size), Direction.straights())];
 
     while (stack.length > 0) {
-        let p = stack.pop()!;
-        area.set(p, passable);
-        for (let direction of walkableDirections) {
-            let nextP = p.translate(direction, 2);
-            if (area.contains(nextP) && !area.get(nextP).passable) {
-                let wallP = p.translate(direction);
-                area.set(wallP, passable)
-
-                stack.push(p);
-                stack.push(nextP);
-
-                walkableDirections = _.shuffle(walkableDirections);
+        let tile = stack.pop()!;
+        area.set(tile.point, passable);
+        while (tile.hasNext()) {
+            let direction = tile.next();
+            let nextPoint = tile.point.translate(direction, 2);
+            if (area.contains(nextPoint) && !area.get(nextPoint).passable) {
+                area.set(tile.point.translate(direction), passable);
+                stack.push(tile);
+                stack.push(new VisitedTile(nextPoint, Direction.straights()));
                 break;
             }
         }

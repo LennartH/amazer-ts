@@ -78,7 +78,7 @@ export class Area {
 
     neighbours(point: Vector): Neighbours {
         let neighbours: Neighbours = {};
-        for (let direction of Direction.values()) {
+        for (let direction of Direction.all()) {
             let newPoint = point.translate(direction);
             if (this.contains(newPoint)) {
                 neighbours[direction.name] = this.get(newPoint);

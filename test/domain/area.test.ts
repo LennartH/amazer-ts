@@ -1,8 +1,8 @@
 import { Area, Tile, Neighbours } from "../../src/domain/area";
 import { Vector } from "../../src/domain/common";
 
-const floor = Tile.passable("Floor", " ");
-const wall = Tile.impassable("Wall", "+");
+const floor = Tile.passable("Floor");
+const wall = Tile.impassable("Wall");
 
 test("default initial tile", () => {
     let area = new Area({width: 10, height: 10});

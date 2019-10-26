@@ -1,7 +1,8 @@
 import { Area } from "../domain/area";
-import { Size } from "../domain/common";
+import { Size, Vector, Direction } from "../domain/common";
 import { RecursiveBacktracker, RandomArea } from "./simple";
 import { TileSet } from "../domain/tileset";
+import _ from "lodash";
 
 export { RecursiveBacktracker } from "./simple";
 
@@ -24,4 +25,27 @@ export function generator(name: string): AreaGenerator | undefined {
     return generators.find(generator => {
         return generator.name == cleanName;
     });
+}
+
+export class VisitedTile {
+    private readonly walkableDirections: Direction[];
+
+    constructor(
+        readonly point: Vector,
+        walkableDirections: Iterable<Direction>
+    ) {
+        this.walkableDirections = _.shuffle(walkableDirections);
+    }
+
+    hasNext(): boolean {
+        return this.walkableDirections.length > 0;
+    }
+
+    next(): Direction {
+        let next = this.walkableDirections.pop();
+        if (next === undefined) {
+            throw new Error("No walkable directions left")
+        }
+        return next;
+    }
 }

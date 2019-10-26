@@ -45,12 +45,26 @@ export class Direction {
     static readonly UpLeft = new Direction("UpLeft", -1, 1);
 
     private static readonly _values = [
+        Direction.None,
         Direction.Up, Direction.UpRight, Direction.Right, Direction.DownRight,
         Direction.Down, Direction.DownLeft, Direction.Left, Direction.UpLeft
     ]
 
+    private static readonly _all = [
+        Direction.Up, Direction.UpRight, Direction.Right, Direction.DownRight,
+        Direction.Down, Direction.DownLeft, Direction.Left, Direction.UpLeft
+    ]
+
+    private static readonly _straights = [
+        Direction.Up, Direction.Right, Direction.Down, Direction.Left
+    ]
+
+    private static readonly _diagonals = [
+        Direction.UpRight, Direction.DownRight, Direction.DownLeft, Direction.UpLeft
+    ]
+
     static forName(name: string): Direction {
-        let direction = Direction.all().find(d => d.name === name);
+        let direction = Direction.values().find(d => d.name === name);
         if (direction === undefined) {
             throw new Error(`No direction available for name ${name}`)
         }
@@ -62,6 +76,14 @@ export class Direction {
     }
 
     static all(): ReadonlyArray<Direction> {
-        return [Direction.None, ...Direction.values()]
+        return Direction._all;
+    }
+
+    static straights(): ReadonlyArray<Direction> {
+        return Direction._straights;
+    }
+
+    static diagonals(): ReadonlyArray<Direction> {
+        return Direction._diagonals;
     }
 }
