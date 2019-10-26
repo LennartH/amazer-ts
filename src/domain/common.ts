@@ -44,6 +44,31 @@ export class Direction {
     static readonly Left = new Direction("Left", -1, 0);
     static readonly UpLeft = new Direction("UpLeft", -1, 1);
 
+    isHorizontal(): boolean {
+        if (this === Direction.Left || this === Direction.Right) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    isVertical(): boolean {
+        if (this === Direction.Up || this === Direction.Down) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    isDiagonal(): boolean {
+        return Direction.diagonals().includes(this);
+    }
+
+    opposite(): Direction {
+        let index = Direction.all().indexOf(this);
+        return Direction.all()[(index + 4) % 8];
+    }
+
     private static readonly _values = [
         Direction.None,
         Direction.Up, Direction.UpRight, Direction.Right, Direction.DownRight,

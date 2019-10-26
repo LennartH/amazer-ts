@@ -1,6 +1,6 @@
 import { Area } from "../domain/area";
 import { Size, Vector, Direction } from "../domain/common";
-import { RecursiveBacktracker, RandomArea } from "./simple";
+import { RecursiveBacktracker, RandomArea, RandomizedKruskal } from "./simple";
 import { TileSet } from "../domain/tileset";
 import _ from "lodash";
 
@@ -18,6 +18,7 @@ export interface AreaGenerator {
 
 const generators: AreaGenerator[] = []
 generators.push(RecursiveBacktracker);
+generators.push(RandomizedKruskal);
 generators.push(RandomArea);
 
 export function generator(name: string): AreaGenerator | undefined {

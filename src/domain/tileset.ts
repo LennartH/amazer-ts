@@ -32,6 +32,7 @@ export interface TileWithMask {
     readonly mask: SymbolMask;
 }
 
+// TODO Use masks to provide symbols depending on their surroundings
 export class TileSet {
     private readonly _tiles: Tile[];
 
