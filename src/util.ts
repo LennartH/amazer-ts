@@ -1,6 +1,6 @@
 import fs from "fs";
 import yaml from "js-yaml";
-import { Area } from "./domain/area";
+import { Area, Tile } from "./domain/area";
 
 export function parseSize(size: string): [number, number] {
     let parts: string[] = size.split("x");
@@ -13,13 +13,25 @@ export function areaToString(area: Area): string {
     for (let y = 0; y < area.height; y++) {
         let tile_strings: string[] = [];
         for (let x = 0; x < area.width; x++) {
-            tile_strings.push(area.get({x: x, y: y}).symbol);
+            const p = { x: x, y: y };
+            tile_strings.push(_symbolFor(area.get(p)));
         }
         // FIXME Joining with space breaks the maze
         row_strings.push("┃ " + tile_strings.join(" ") + " ┃");
     }
     row_strings.push("┗" + "━".repeat(area.width * 2 + 1) + "┛");
     return row_strings.join("\n");
+}
+
+// TODO Use tile set instead of hard coded symbols
+function _symbolFor(tile: Tile): string {
+    if (tile === Tile.Empty) {
+        return "╳";
+    } else if (tile.passable) {
+        return " ";
+    } else {
+        return "#";
+    }
 }
 
 export function readStructuredFile(filePath: string): any {

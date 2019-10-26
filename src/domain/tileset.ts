@@ -3,8 +3,8 @@ import { Direction } from "./common";
 import _ from "lodash";
 import { readStructuredFile } from "../util";
 
-export class TileMask {
-    static readonly Any = new TileMask({});
+export class SymbolMask {
+    static readonly Any = new SymbolMask({});
 
     constructor(private readonly allowedNeighbours: {[direction: string]: Tile[] | Tile | undefined}) { }
 
@@ -29,13 +29,13 @@ export class TileMask {
 
 export interface TileWithMask {
     readonly tile: Tile;
-    readonly mask: TileMask;
+    readonly mask: SymbolMask;
 }
 
 export class TileSet {
-    private readonly _tiles: TileWithMask[];
+    private readonly _tiles: Tile[];
 
-    constructor(tiles?: TileWithMask[]) {
+    constructor(tiles?: Tile[]) {
         this._tiles = tiles || [];
     }
 
@@ -48,28 +48,24 @@ export class TileSet {
         // TODO Extract fromObject method
         let tileSet = new TileSet();
         for (let entry of content) {
-            let tileWithMask: TileWithMask = {
-                tile: new Tile(entry.name, entry.passable, entry.symbol),
-                mask: TileMask.Any  // TODO Read from file (all tiles must be known to parse mask string)
-            }
-            tileSet.add(tileWithMask);
+            tileSet.add(new Tile(entry.name, entry.passable));
         }
         return tileSet;
     }
 
     get tiles(): ReadonlyArray<Tile> {
-        return this._tiles.map(t => t.tile);
+        return this._tiles;
     }
 
-    add(tile: TileWithMask) {
-        this._tiles.push(tile);
+    get passables(): ReadonlyArray<Tile> {
+        return this._tiles.filter(t => t.passable);
     }
 
-    getMatching(neighbours: Neighbours, predicate?: (t: Tile) => boolean): Tile[] {
-        // TODO Throw error if no tile matches
-        if (predicate === undefined) {
-            predicate = _ => true;
-        }
-        return this._tiles.filter(t => t.mask.matchesAll(neighbours)).map(t => t.tile).filter(predicate);
+    get impassables(): ReadonlyArray<Tile> {
+        return this._tiles.filter(t => !t.passable);
+    }
+
+    add(...tiles: Tile[]) {
+        this._tiles.push(...tiles);
     }
 }

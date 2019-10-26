@@ -9,20 +9,9 @@ test("impassable factory method", () => {
     expect(Tile.impassable("Wall").passable).toBe(false);
 })
 
-test("tile with symbol", () => {
-    expect(Tile.passable("Floor", " ").symbol).toBe(" ");
-});
-
-test("tile symbol from name", () => {
-    expect(Tile.passable("Floor").symbol).toBe("F");
-});
-
 test("equality", () => {
     expect(Tile.passable("Floor"))
         .toEqual(Tile.passable("Floor"));
-
-    expect(Tile.passable("Floor", " "))
-        .not.toEqual(Tile.passable("Floor"));
 
     expect(Tile.impassable("Floor"))
         .not.toEqual(Tile.passable("Floor"));

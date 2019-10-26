@@ -1,7 +1,5 @@
 - name: Floor
   passable: true
-  symbol: ' '
 
 - name: Wall
   passable: false
-  symbol: +

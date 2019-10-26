@@ -1,5 +1,5 @@
 import { Tile } from "../../src/domain/area";
-import { TileMask } from "../../src/domain/tileset";
+import { SymbolMask } from "../../src/domain/tileset";
 import { Direction } from "../../src/domain/common";
 
 const floor = Tile.passable("Floor");
@@ -15,7 +15,7 @@ const allowedNeighbours = {
 }
 
 test("matches single tile", () => {
-    let mask = new TileMask(allowedNeighbours);
+    let mask = new SymbolMask(allowedNeighbours);
 
     expect(mask.matches(Direction.Up, wall)).toBe(false);
     expect(mask.matches(Direction.Up, floor)).toBe(true);
@@ -23,7 +23,7 @@ test("matches single tile", () => {
 });
 
 test("matches multiple tiles", () => {
-    let mask = new TileMask(allowedNeighbours);
+    let mask = new SymbolMask(allowedNeighbours);
 
     expect(mask.matches(Direction.Right, wall)).toBe(true);
     expect(mask.matches(Direction.Right, wallClone)).toBe(true);
@@ -32,7 +32,7 @@ test("matches multiple tiles", () => {
 });
 
 test("matches empty list", () => {
-    let mask = new TileMask(allowedNeighbours);
+    let mask = new SymbolMask(allowedNeighbours);
 
     expect(mask.matches(Direction.Down, lava)).toBe(true);
     expect(mask.matches(Direction.Down, wall)).toBe(true);
@@ -41,7 +41,7 @@ test("matches empty list", () => {
 });
 
 test("matches unset direction", () => {
-    let mask = new TileMask(allowedNeighbours);
+    let mask = new SymbolMask(allowedNeighbours);
 
     expect(mask.matches(Direction.UpLeft, lava)).toBe(true);
     expect(mask.matches(Direction.UpLeft, wall)).toBe(true);

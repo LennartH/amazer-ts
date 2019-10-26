@@ -10,9 +10,7 @@
     "start": "ts-node src/main.ts",
     "create": "npm run build && npm run test",
     "build": "tsc --sourceMap false -p .",
-    "test": "jest",
-
-    "jest:watchAll": "jest --watchAll"
+    "test": "jest"
   },
   "repository": {
     "type": "git",

@@ -1,28 +1,19 @@
 import { Size, Direction, Point, Vector } from "./common";
 
 export class Tile {
-    static readonly Empty = Tile.impassable("Empty", "╳");
-
-    private readonly _symbol?: string;
+    static readonly Empty = Tile.impassable("Empty");
 
     constructor(
         readonly name: string,
-        readonly passable: boolean,
-        symbol?: string
-    ) {
-        this._symbol = symbol;
+        readonly passable: boolean
+    ) { }
+
+    static passable(name: string): Tile {
+        return new Tile(name, true)
     }
 
-    static passable(name: string, symbol?: string): Tile {
-        return new Tile(name, true, symbol)
-    }
-
-    static impassable(name: string, symbol?: string): Tile {
-        return new Tile(name, false, symbol)
-    }
-
-    get symbol(): string {
-        return this._symbol || this.name.charAt(0);
+    static impassable(name: string): Tile {
+        return new Tile(name, false)
     }
 }
 
