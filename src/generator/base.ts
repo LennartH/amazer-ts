@@ -6,8 +6,8 @@ import _ from "lodash";
 
 
 export interface GeneratorConfig {
-    size: Size;
-    tileSet: TileSet;
+    readonly size: Size;
+    readonly tileSet: TileSet;
 }
 
 export interface AreaGenerator {
@@ -20,7 +20,7 @@ generators.push(RandomizedKruskal);
 generators.push(RandomizedPrim);
 generators.push(RandomArea);
 
-export function generator(name: string): AreaGenerator | undefined {
+export function generator(name: string): AreaGenerator {
     let cleanedName = name.charAt(0).toLowerCase() + name.slice(1);
     const generator = generators.find(g => g.name == cleanedName);
     if (generator === undefined) {
