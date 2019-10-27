@@ -1,7 +1,8 @@
 import yargs from "yargs";
 import { Config, amazer } from "./lib";
 import { parseSize, areaToString } from "./util";
-import { AreaGenerator, generator, RecursiveBacktracker } from "./generator/base";
+import { AreaGenerator, generator } from "./generator/base";
+import { RecursiveBacktracker } from "./generator/simple";
 
 const version = "0.1.0"
 

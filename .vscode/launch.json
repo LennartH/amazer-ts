@@ -9,7 +9,7 @@
             "request": "launch",
             "name": "Amazer",
             "program": "${workspaceFolder}/src/main.ts",
-            "args": ["-s", "5x5"],
+            "args": ["-s", "10x10", "-g", "RandomizedPrims"],
             "preLaunchTask": "tsc: build - tsconfig.json",
             "outFiles": [
                 "${workspaceFolder}/dist/**/*.js"

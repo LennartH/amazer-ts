@@ -85,6 +85,50 @@ function randomizedKruskal(config: GeneratorConfig): Area {
 }
 
 
+export const RandomizedPrim: AreaGenerator = randomizedPrim;
+
+function randomizedPrim(config: GeneratorConfig): Area {
+    const tileSet = config.tileSet;
+    const passable = tileSet.passables[0];
+    const impassable = tileSet.impassables[0];
+    const area = new Area(config.size, impassable);
+
+    let walls: VisitedTile[] = [];
+    let point = Vector.random(area.size);
+    area.set(point, passable);
+    Direction.straights().forEach(d => {
+        const p = point.translate(d);
+        if (area.contains(p)) {
+            walls.push(new VisitedTile(p, [Direction.Up, Direction.Right]));
+        }
+    });
+
+    while (walls.length > 0) {
+        let index = _.random(walls.length - 1);
+        let wall = walls[index];
+        let direction = wall.next();
+        let neighbour1 = wall.point.translate(direction);
+        let neighbour2 = wall.point.translate(direction.opposite());
+        if (area.contains(neighbour1) && area.contains(neighbour2) && (area.get(neighbour1) === passable) !== (area.get(neighbour2) === passable)) {
+            let unvisited = area.get(neighbour1) === passable ? neighbour2 : neighbour1;
+            area.set(wall.point, passable);
+            area.set(unvisited, passable);
+            Direction.straights().forEach(d => {
+                const p = unvisited.translate(d);
+                if (area.contains(p)) {
+                    walls.push(new VisitedTile(p, [Direction.Up, Direction.Right]));
+                }
+            });
+        }
+        if (!wall.hasNext()) {
+            walls.splice(index, 1);
+        }
+    }
+
+    return area;
+}
+
+
 export const RandomArea: AreaGenerator = random;
 
 function random(config: GeneratorConfig): Area {
