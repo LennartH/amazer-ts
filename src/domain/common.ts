@@ -17,8 +17,12 @@ export class Vector implements Point {
         return new Vector(point.x, point.y);
     }
 
-    static random(size: Size): Vector {
-        return new Vector(_.random(size.width - 1), _.random(size.height - 1))
+    static random(size: Size, predicate?: (p: Vector) => boolean): Vector {
+        let point: Vector;
+        do {
+            point = new Vector(_.random(size.width - 1), _.random(size.height - 1));
+        } while (predicate !== undefined && !predicate(point))
+        return point;
     }
 
     translate(direction: {dx?: number, dy?: number}, times=1): Vector {

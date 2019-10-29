@@ -56,7 +56,7 @@ export class Area {
         }
     }
 
-    forEach(consumer: (t: Tile, p?: Vector) => void) {
+    forEach(consumer: (t: Tile, p: Vector) => void) {
         for (let [t, p] of this.cells()) {
             consumer(t, p);
         }

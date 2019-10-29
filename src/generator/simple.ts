@@ -11,8 +11,9 @@ function recursiveBacktracker(config: GeneratorConfig): Area {
     const passable = tileSet.passables[0];
     const impassable = tileSet.impassables[0];
     const area = new Area(config.size, impassable);
-    let stack: VisitedTile[] = [new VisitedTile(Vector.random(area.size), Direction.straights())];
 
+    const start = Vector.random(area.size, p => p.x % 2 == 0 && p.y % 2 == 0);
+    let stack: VisitedTile[] = [new VisitedTile(start, Direction.straights())];
     while (stack.length > 0) {
         let tile = stack.pop()!;
         area.set(tile.point, passable);
@@ -42,7 +43,7 @@ function randomizedKruskal(config: GeneratorConfig): Area {
     const subSets: Array<Set<Vector>> = [];
     let walls: Array<VisitedTile> = [];
     for (let point of area.points()) {
-        if (point.x % 2 == 0 || point.y % 2 == 1) {
+        if (point.x % 2 == 1 || point.y % 2 == 1) {
             area.set(point, impassable);
             walls.push(new VisitedTile(point, [Direction.Up, Direction.Right]));
         } else {
@@ -93,9 +94,10 @@ function randomizedPrim(config: GeneratorConfig): Area {
     const impassable = tileSet.impassables[0];
     const area = new Area(config.size, impassable);
 
-    let walls: VisitedTile[] = [];
-    let point = Vector.random(area.size);
+    const walls: VisitedTile[] = [];
+    const point = Vector.random(area.size, p => p.x % 2 == 0 && p.y % 2 == 0);
     area.set(point, passable);
+    // TODO Remove duplicated code
     Direction.straights().forEach(d => {
         const p = point.translate(d);
         if (area.contains(p)) {
@@ -113,6 +115,7 @@ function randomizedPrim(config: GeneratorConfig): Area {
             let unvisited = area.get(neighbour1) === passable ? neighbour2 : neighbour1;
             area.set(wall.point, passable);
             area.set(unvisited, passable);
+            // TODO Remove duplicated code
             Direction.straights().forEach(d => {
                 const p = unvisited.translate(d);
                 if (area.contains(p)) {

@@ -32,7 +32,7 @@ function emmure(area: Area, config: ModifierConfig): Area {
         width: area.width + xOffset + wallsNeeded["Right"],
         height: area.height + yOffset + wallsNeeded["Down"]
     });
-    area.forEach((t, p) => emmuredArea.set({x: p!.x + xOffset, y: p!.y + yOffset}, t));
+    area.forEach((t, p) => emmuredArea.set({x: p.x + xOffset, y: p.y + yOffset}, t));
     for (let point of emmuredArea.points()) {
         if (emmuredArea.get(point) === Tile.Empty) {
             emmuredArea.set(point, impassable);
