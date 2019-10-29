@@ -4,13 +4,15 @@ import { Size } from "./domain/common";
 import { AreaGenerator } from "./generator/base";
 import { TileSet } from "./domain/tileset";
 import { readStructuredFile } from "./util";
+import { AreaModifier, modifier } from "./modifier/base";
 
 export class Config {
 
     constructor(
         readonly size: Size,
         readonly generator: AreaGenerator,
-        readonly tileSet: TileSet
+        readonly tileSet: TileSet,
+        readonly modifiers: AreaModifier[]
     ) { }
 
     static fromArgs(args: Arguments): Config {
@@ -19,10 +21,15 @@ export class Config {
             return Config.fromFile(args.config);
         } else {
             let tileSetFile = args.tileSet || "resources/simple-tileset.yml"
+            let modifiers: AreaModifier[] = [];
+            if (args.modifier !== undefined) {
+                args.modifier.forEach(name => modifiers.push(modifier(name)))
+            }
             return new Config(
                 Config.sizeFromArgs(args),
                 args.generator!,
-                TileSet.fromFile(tileSetFile)
+                TileSet.fromFile(tileSetFile),
+                modifiers
             );
         }
     }
@@ -48,7 +55,11 @@ export class Amazer {
     constructor(readonly config: Config) { }
 
     generate(): Area {
-        return this.config.generator(this.config);
+        let area = this.config.generator(this.config);
+        for (let modifier of this.config.modifiers) {
+            area = modifier(area, this.config);
+        }
+        return area;
     }
 }
 

@@ -13,6 +13,7 @@ export interface Arguments {
     height?: number,
     generator?: AreaGenerator,
     tileSet?: string,
+    modifier?: string[],
     [name: string]: any
 }
 
@@ -60,6 +61,12 @@ const cli = yargs
             alias: "tile-set",
             type: "string",
             describe: "The tile set file (JSON or Yaml)",
+            requiresArg: true
+        },
+        m: {
+            alias: "modifier",
+            type: "array",
+            describe: "The modifiers to apply after the generation",
             requiresArg: true
         }
     });

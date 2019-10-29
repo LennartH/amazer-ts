@@ -14,11 +14,11 @@ const modifiers: AreaModifier[] = [
     Emmure
 ]
 
-export function generator(name: string): AreaModifier {
+export function modifier(name: string): AreaModifier {
     let cleanedName = name.charAt(0).toLowerCase() + name.slice(1);
-    const generator = modifiers.find(g => g.name == cleanedName);
-    if (generator === undefined) {
+    const modifier = modifiers.find(g => g.name == cleanedName);
+    if (modifier === undefined) {
         throw new Error(`No modifier with name ${name} could be found`);
     }
-    return generator;
+    return modifier;
 }
