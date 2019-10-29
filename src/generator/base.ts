@@ -14,11 +14,9 @@ export interface AreaGenerator {
     (config: GeneratorConfig): Area;
 }
 
-const generators: AreaGenerator[] = []
-generators.push(RecursiveBacktracker);
-generators.push(RandomizedKruskal);
-generators.push(RandomizedPrim);
-generators.push(RandomArea);
+const generators: AreaGenerator[] = [
+    RecursiveBacktracker, RandomizedKruskal, RandomizedPrim, RandomArea
+];
 
 export function generator(name: string): AreaGenerator {
     let cleanedName = name.charAt(0).toLowerCase() + name.slice(1);

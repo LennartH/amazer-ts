@@ -1,5 +1,6 @@
 import { TileSet } from "../domain/tileset";
 import { Area } from "../domain/area";
+import { Emmure } from "./simple";
 
 export interface ModifierConfig {
     readonly tileSet: TileSet;
@@ -9,7 +10,9 @@ export interface AreaModifier {
     (area: Area, config: ModifierConfig): Area;
 }
 
-const modifiers: AreaModifier[] = []
+const modifiers: AreaModifier[] = [
+    Emmure
+]
 
 export function generator(name: string): AreaModifier {
     let cleanedName = name.charAt(0).toLowerCase() + name.slice(1);
