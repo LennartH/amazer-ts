@@ -4,6 +4,8 @@ import { parseSize, areaToString } from "./util";
 import { AreaGenerator, generator } from "./generator/base";
 import { RecursiveBacktracker } from "./generator/simple";
 
+import _ from "lodash";
+
 const version = "0.1.0"
 
 export interface Arguments {

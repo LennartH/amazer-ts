@@ -1,3 +1,4 @@
+import _ from "lodash";
 import { Size, Direction, Point, Vector } from "./common";
 
 export class Tile {
@@ -90,4 +91,31 @@ export class Area {
 
 export interface Neighbours {
     [direction: string]: Tile
+}
+
+export function floodFill(area: Area, predicate: (t: Tile) => boolean): Array<Array<Vector>> {
+    const sections: Array<Array<Vector>> = [];
+
+    const points = _.shuffle(Array.from(area.points()));
+    let start = points.find(p => predicate(area.get(p)));
+    while (start !== undefined) {
+        const section: Vector[] = [];
+        const stack: Vector[] = [start];
+        while (stack.length > 0) {
+            const point = stack.pop()!;
+            section.push(point);
+            for (let direction of Direction.straights()) {
+                const neighbour = point.translate(direction);
+                // TODO Can this be cleaned?
+                if (area.contains(neighbour) && predicate(area.get(neighbour)) && !section.some(p => p.x === neighbour.x && p.y === neighbour.y)) {
+                    stack.push(neighbour);
+                }
+            }
+        }
+        sections.push(section);
+        // TODO Can this be cleaned?
+        start = points.find(s => predicate(area.get(s)) && !sections.some(sec => sec.some(p => p.x === s.x && p.y === s.y)));
+    }
+
+    return sections;
 }
