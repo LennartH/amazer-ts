@@ -1,10 +1,10 @@
 import _ from "lodash";
-import { Area } from "../domain/area";
+import { Area, Tile } from "../domain/area";
 import { AreaGenerator, GeneratorConfig, VisitedTile } from "./base";
 import { Direction, Vector } from "../domain/common";
 
 
-export const RecursiveBacktracker: AreaGenerator = recursiveBacktracker;
+export const RecursiveBacktracker: AreaGenerator<GeneratorConfig> = recursiveBacktracker;
 
 function recursiveBacktracker(config: GeneratorConfig): Area {
     const tileSet = config.tileSet;
@@ -13,6 +13,11 @@ function recursiveBacktracker(config: GeneratorConfig): Area {
     const area = new Area(config.size, impassable);
 
     const start = Vector.random(area.size, p => p.x % 2 == 0 && p.y % 2 == 0);
+    recursiveBacktrack(area, start, passable);
+    return area;
+}
+
+export function recursiveBacktrack(area: Area, start: Vector, passable: Tile) {
     let stack: VisitedTile[] = [new VisitedTile(start, Direction.straights())];
     while (stack.length > 0) {
         let tile = stack.pop()!;
@@ -28,11 +33,10 @@ function recursiveBacktracker(config: GeneratorConfig): Area {
             }
         }
     }
-    return area;
 }
 
 
-export const RandomizedKruskal: AreaGenerator = randomizedKruskal;
+export const RandomizedKruskal: AreaGenerator<GeneratorConfig> = randomizedKruskal;
 
 function randomizedKruskal(config: GeneratorConfig): Area {
     const tileSet = config.tileSet;
@@ -86,7 +90,7 @@ function randomizedKruskal(config: GeneratorConfig): Area {
 }
 
 
-export const RandomizedPrim: AreaGenerator = randomizedPrim;
+export const RandomizedPrim: AreaGenerator<GeneratorConfig> = randomizedPrim;
 
 function randomizedPrim(config: GeneratorConfig): Area {
     const tileSet = config.tileSet;
@@ -132,7 +136,7 @@ function randomizedPrim(config: GeneratorConfig): Area {
 }
 
 
-export const RandomArea: AreaGenerator = random;
+export const RandomArea: AreaGenerator<GeneratorConfig> = random;
 
 function random(config: GeneratorConfig): Area {
     const area = new Area(config.size);

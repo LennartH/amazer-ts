@@ -1,8 +1,9 @@
 import { Area } from "../domain/area";
-import { Size, Vector, Direction } from "../domain/common";
+import { Vector, Direction, Size } from "../domain/common";
 import { RecursiveBacktracker, RandomArea, RandomizedKruskal, RandomizedPrim } from "./simple";
 import { TileSet } from "../domain/tileset";
 import _ from "lodash";
+import { Nystrom } from "./nystrom";
 
 
 export interface GeneratorConfig {
@@ -10,15 +11,15 @@ export interface GeneratorConfig {
     readonly tileSet: TileSet;
 }
 
-export interface AreaGenerator {
-    (config: GeneratorConfig): Area;
+export interface AreaGenerator<C extends GeneratorConfig> {
+    (config: C): Area;
 }
 
-const generators: AreaGenerator[] = [
-    RecursiveBacktracker, RandomizedKruskal, RandomizedPrim, RandomArea
+const generators: AreaGenerator<any>[] = [
+    RecursiveBacktracker, RandomizedKruskal, RandomizedPrim, RandomArea, Nystrom
 ];
 
-export function generator(name: string): AreaGenerator {
+export function generator<C extends GeneratorConfig>(name: string): AreaGenerator<C> {
     let cleanedName = name.charAt(0).toLowerCase() + name.slice(1);
     const generator = generators.find(g => g.name == cleanedName);
     if (generator === undefined) {

@@ -77,15 +77,24 @@ export class Area {
         return x >= 0 && x < this.width && y >= 0 && y < this.height;
     }
 
-    neighbours(point: Vector): Neighbours {
+    neighbours(point: Vector, directions?: Iterable<Direction>): Neighbours {
         let neighbours: Neighbours = {};
-        for (let direction of Direction.all()) {
+        directions = directions || Direction.all();
+        for (let direction of directions) {
             let newPoint = point.translate(direction);
             if (this.contains(newPoint)) {
                 neighbours[direction.name] = this.get(newPoint);
             }
         }
         return neighbours;
+    }
+
+    fill(tile: Tile) {
+        for (let point of this.points()) {
+            if (this.get(point) === Tile.Empty) {
+                this.set(point, tile);
+            }
+        }
     }
 }
 

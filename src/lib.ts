@@ -1,7 +1,7 @@
 import { Arguments } from "./main";
 import { Area } from "./domain/area";
 import { Size } from "./domain/common";
-import { AreaGenerator } from "./generator/base";
+import { AreaGenerator, GeneratorConfig } from "./generator/base";
 import { TileSet } from "./domain/tileset";
 import { readStructuredFile } from "./util";
 import { AreaModifier, modifier } from "./modifier/base";
@@ -10,7 +10,7 @@ export class Config {
 
     constructor(
         readonly size: Size,
-        readonly generator: AreaGenerator,
+        readonly generator: AreaGenerator<GeneratorConfig>,
         readonly tileSet: TileSet,
         readonly modifiers: AreaModifier[]
     ) { }

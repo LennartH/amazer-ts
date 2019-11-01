@@ -30,6 +30,39 @@ export class Vector implements Point {
     }
 }
 
+export class Rectangle {
+    readonly topLeft: Vector;
+    readonly topRight: Vector;
+    readonly bottomLeft: Vector;
+    readonly bottomRight: Vector;
+
+    constructor(topLeft: Point, readonly size: Size) {
+        this.topLeft = new Vector(topLeft.x, topLeft.y);
+        this.topRight = new Vector(topLeft.x + size.width - 1, topLeft.y);
+        this.bottomLeft = new Vector(topLeft.x, topLeft.y + size.height - 1);
+        this.bottomRight = new Vector(topLeft.x + size.width - 1, topLeft.y + size.height - 1);
+    }
+
+    intersect(other: Rectangle): boolean {
+        return this.topLeft.x < other.bottomRight.x && this.bottomRight.x > other.topLeft.x
+            && this.topLeft.y < other.bottomRight.y && this.bottomRight.y > other.topLeft.y;
+    }
+
+    *points(): Iterable<Vector> {
+        for (let x = this.topLeft.x; x <= this.bottomRight.x; x++) {
+            for (let y = this.topLeft.y; y <= this.bottomRight.y; y++) {
+                yield new Vector(x, y);
+            }
+        }
+    }
+
+    forEach(consumer: (p: Vector) => void) {
+        for (let p of this.points()) {
+            consumer(p);
+        }
+    }
+}
+
 export class Direction {
     private constructor(
         readonly name: string,
@@ -62,6 +95,10 @@ export class Direction {
         } else {
             return false;
         }
+    }
+
+    isStraight(): boolean {
+        return this.isHorizontal() || this.isVertical();
     }
 
     isDiagonal(): boolean {

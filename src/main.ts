@@ -1,10 +1,11 @@
+import _ from "lodash";
+
 import yargs from "yargs";
 import { Config, amazer } from "./lib";
 import { parseSize, areaToString } from "./util";
-import { AreaGenerator, generator } from "./generator/base";
+import { AreaGenerator, generator, GeneratorConfig } from "./generator/base";
 import { RecursiveBacktracker } from "./generator/simple";
 
-import _ from "lodash";
 
 const version = "0.1.0"
 
@@ -13,7 +14,7 @@ export interface Arguments {
     size?: [number, number],
     width?: number,
     height?: number,
-    generator?: AreaGenerator,
+    generator?: AreaGenerator<GeneratorConfig>,
     tileSet?: string,
     modifier?: string[],
     [name: string]: any
