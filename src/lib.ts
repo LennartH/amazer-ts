@@ -10,7 +10,7 @@ export class Config {
     constructor(
         readonly size: Size,
         readonly generator: AreaGenerator<GeneratorConfig>,
-        readonly modifiers: AreaModifier[]
+        readonly modifiers: AreaModifier<any>[]
     ) { }
 
     static fromArgs(args: Arguments): Config {
@@ -18,7 +18,7 @@ export class Config {
             // TODO Handle/Merge other args
             return Config.fromFile(args.config);
         } else {
-            let modifiers: AreaModifier[] = [];
+            let modifiers: AreaModifier<any>[] = [];
             if (args.modifier !== undefined) {
                 args.modifier.forEach(name => modifiers.push(modifier(name)))
             }

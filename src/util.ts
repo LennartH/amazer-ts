@@ -16,7 +16,6 @@ export function areaToString(area: Area): string {
             const p = { x: x, y: y };
             tile_strings.push(_symbolFor(area.get(p)));
         }
-        // FIXME Joining with space breaks the maze
         row_strings.push("┃ " + tile_strings.join(" ") + " ┃");
     }
     row_strings.push("┗" + "━".repeat(area.width * 2 + 1) + "┛");

@@ -1,19 +1,20 @@
 import { Area } from "../domain/area";
 import { Emmure } from "./simple";
+import { RemoveDeadends } from "./removeDeadends";
 
 export interface ModifierConfig {
     readonly [k: string]: any
 }
 
-export interface AreaModifier {
-    (area: Area, config: ModifierConfig): Area;
+export interface AreaModifier<C extends ModifierConfig> {
+    (area: Area, config: C): Area;
 }
 
-const modifiers: AreaModifier[] = [
-    Emmure
+const modifiers: AreaModifier<any>[] = [
+    Emmure, RemoveDeadends
 ]
 
-export function modifier(name: string): AreaModifier {
+export function modifier<C extends ModifierConfig>(name: string): AreaModifier<C> {
     let cleanedName = name.charAt(0).toLowerCase() + name.slice(1);
     const modifier = modifiers.find(g => g.name == cleanedName);
     if (modifier === undefined) {
