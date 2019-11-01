@@ -2,9 +2,7 @@ import { Area } from "../domain/area";
 import { Emmure } from "./simple";
 import { RemoveDeadends } from "./removeDeadends";
 
-export interface ModifierConfig {
-    readonly [k: string]: any
-}
+export interface ModifierConfig { }
 
 export interface AreaModifier<C extends ModifierConfig> {
     (area: Area, config: C): Area;

@@ -6,7 +6,7 @@ import { Vector, Direction } from "../domain/common";
 
 
 interface RemoveDeadendsConfig extends ModifierConfig {
-    readonly deadendsToKeep?: number;
+    readonly deadendsToRemove?: number;
 }
 
 const DeadendTile = Tile.impassable("Deadend");
@@ -28,11 +28,10 @@ function removeDeadends(area: Area, config: RemoveDeadendsConfig): Area {
         }
     }
 
-    let deadendsToKeep = config.deadendsToKeep || 0.3;
-    if (deadendsToKeep < 1) {
-        deadendsToKeep = deadendsToKeep * collectedDeadends.length;
+    let deadendsToRemove = config.deadendsToRemove || 0.6;
+    if (deadendsToRemove < 1) {
+        deadendsToRemove = deadendsToRemove * collectedDeadends.length;
     }
-    let deadendsToRemove = collectedDeadends.length - deadendsToKeep;
     for (let deadend of collectedDeadends) {
         const tile = deadendsToRemove > 0 ? Tile.Wall : Tile.Floor;
         area.set(deadend, tile);
