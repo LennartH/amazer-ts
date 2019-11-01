@@ -1,9 +1,8 @@
-import { TileSet } from "../domain/tileset";
 import { Area } from "../domain/area";
 import { Emmure } from "./simple";
 
 export interface ModifierConfig {
-    readonly tileSet: TileSet;
+    readonly [k: string]: any
 }
 
 export interface AreaModifier {

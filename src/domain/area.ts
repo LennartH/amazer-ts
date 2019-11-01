@@ -4,6 +4,9 @@ import { Size, Direction, Point, Vector } from "./common";
 export class Tile {
     static readonly Empty = Tile.impassable("Empty");
 
+    static readonly Floor = Tile.passable("Floor");
+    static readonly Wall = Tile.impassable("Wall");
+
     constructor(
         readonly name: string,
         readonly passable: boolean

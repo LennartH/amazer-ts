@@ -15,7 +15,6 @@ export interface Arguments {
     width?: number,
     height?: number,
     generator?: AreaGenerator<GeneratorConfig>,
-    tileSet?: string,
     modifier?: string[],
     [name: string]: any
 }
@@ -59,12 +58,6 @@ const cli = yargs
             coerce: generator,
             describe: "The name of the area generator to use",
             default: RecursiveBacktracker.name.charAt(0).toUpperCase() + RecursiveBacktracker.name.slice(1)
-        },
-        t: {
-            alias: "tile-set",
-            type: "string",
-            describe: "The tile set file (JSON or Yaml)",
-            requiresArg: true
         },
         m: {
             alias: "modifier",

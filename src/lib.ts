@@ -2,7 +2,6 @@ import { Arguments } from "./main";
 import { Area } from "./domain/area";
 import { Size } from "./domain/common";
 import { AreaGenerator, GeneratorConfig } from "./generator/base";
-import { TileSet } from "./domain/tileset";
 import { readStructuredFile } from "./util";
 import { AreaModifier, modifier } from "./modifier/base";
 
@@ -11,7 +10,6 @@ export class Config {
     constructor(
         readonly size: Size,
         readonly generator: AreaGenerator<GeneratorConfig>,
-        readonly tileSet: TileSet,
         readonly modifiers: AreaModifier[]
     ) { }
 
@@ -20,7 +18,6 @@ export class Config {
             // TODO Handle/Merge other args
             return Config.fromFile(args.config);
         } else {
-            let tileSetFile = args.tileSet || "resources/simple-tileset.yml"
             let modifiers: AreaModifier[] = [];
             if (args.modifier !== undefined) {
                 args.modifier.forEach(name => modifiers.push(modifier(name)))
@@ -28,7 +25,6 @@ export class Config {
             return new Config(
                 Config.sizeFromArgs(args),
                 args.generator!,
-                TileSet.fromFile(tileSetFile),
                 modifiers
             );
         }

@@ -1,14 +1,12 @@
 import { Area } from "../domain/area";
 import { Vector, Direction, Size } from "../domain/common";
 import { RecursiveBacktracker, RandomArea, RandomizedKruskal, RandomizedPrim } from "./simple";
-import { TileSet } from "../domain/tileset";
 import _ from "lodash";
 import { Nystrom } from "./nystrom";
 
 
 export interface GeneratorConfig {
     readonly size: Size;
-    readonly tileSet: TileSet;
 }
 
 export interface AreaGenerator<C extends GeneratorConfig> {

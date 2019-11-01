@@ -4,8 +4,7 @@ import { Direction, Vector } from "../domain/common";
 
 export const Emmure: AreaModifier = emmure;
 
-function emmure(area: Area, config: ModifierConfig): Area {
-    let impassable = config.tileSet.impassables[0];
+function emmure(area: Area, _: ModifierConfig): Area {
     let borders: {[direction: string]: [Vector, Direction]} = {
         "Up": [new Vector(0, 0), Direction.Right],
         "Left": [new Vector(0, 0), Direction.Down],
@@ -35,7 +34,7 @@ function emmure(area: Area, config: ModifierConfig): Area {
     area.forEach((t, p) => emmuredArea.set({x: p.x + xOffset, y: p.y + yOffset}, t));
     for (let point of emmuredArea.points()) {
         if (emmuredArea.get(point) === Tile.Empty) {
-            emmuredArea.set(point, impassable);
+            emmuredArea.set(point, Tile.Wall);
         }
     }
     return emmuredArea;

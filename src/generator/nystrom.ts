@@ -3,7 +3,6 @@ import _ from "lodash";
 import { AreaGenerator, GeneratorConfig } from "./base";
 import { Area, Tile, floodFill } from "../domain/area";
 import { Size, Vector, Rectangle, Direction } from "../domain/common";
-import { TileSet } from "../domain/tileset";
 import { recursiveBacktrack } from "./simple";
 
 
@@ -17,29 +16,25 @@ export const Nystrom: AreaGenerator<NystromConfig> = nystrom;
 
 function nystrom(c: NystromConfig): Area {
     let config = new _NystromConfig(c);
-    const tileSet = config.tileSet;
-    const passable = tileSet.passables[0];
-    const impassable = tileSet.impassables[0];
-    const area = new Area(config.size, impassable);
+    const area = new Area(config.size, Tile.Wall);
 
     for (let i = 0; i < config.roomPlacementAttempts; i++) {
         tryToAddRoom(config, area);
     }
-    carvePassages(area, passable);
-    connectSections(area, passable);
+    carvePassages(area);
+    connectSections(area);
 
     return area;
 }
 
 function tryToAddRoom(config: _NystromConfig, area: Area): void {
-    const passable = config.tileSet.passables[0];
     const room = randomRoom(config);
     for (let point of room.points()) {
         if (!area.contains(point) || area.get(point).passable) {
             return;
         }
     }
-    room.forEach(p => area.set(p, passable));
+    room.forEach(p => area.set(p, Tile.Floor));
 }
 
 function randomRoom(config: _NystromConfig) : Rectangle {
@@ -54,7 +49,7 @@ function randomRoom(config: _NystromConfig) : Rectangle {
     return new Rectangle(start, size);
 }
 
-function carvePassages(area: Area, passable: Tile): void {
+function carvePassages(area: Area): void {
     let start: Vector | undefined;
     do {
         start = undefined;
@@ -65,16 +60,16 @@ function carvePassages(area: Area, passable: Tile): void {
             }
         }
         if (start !== undefined) {
-            recursiveBacktrack(area, start, passable);
+            recursiveBacktrack(area, start);
         }
     } while (start !== undefined);
 }
 
-function connectSections(area: Area, passable: Tile): void {
+function connectSections(area: Area): void {
     const sections = floodFill(area, t => t.passable);
     while (sections.length > 1) {
         const link = _.sample(findSectionLinks(area, sections))!;
-        area.set(link.point, passable);
+        area.set(link.point, Tile.Floor);
         sections[link.section1].push(link.point, ...sections[link.section2]);
         sections.splice(link.section2, 1);
     }
@@ -134,14 +129,12 @@ class _NystromConfig implements NystromConfig {
     private static readonly minMaxRoomSize = 5;
 
     readonly size: Size;
-    readonly tileSet: TileSet;
     readonly minRoomSize: Size;
     readonly maxRoomSize: Size;
     readonly roomPlacementAttempts: number;
 
     constructor(config: NystromConfig) {
         this.size = config.size;
-        this.tileSet = config.tileSet;
         this.minRoomSize = config.minRoomSize || this.defaultMinRoomSize();
         this.maxRoomSize = config.maxRoomSize || this.defaultMaxRoomSize();
         this.roomPlacementAttempts = config.roomPlacementAttempts || Math.min(config.size.width * config.size.height * 0.5, 1000);

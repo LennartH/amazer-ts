@@ -1,5 +1,0 @@
-- name: Floor
-  passable: true
-
-- name: Wall
-  passable: false
