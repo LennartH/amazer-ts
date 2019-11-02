@@ -3,14 +3,14 @@ import { Area } from "./domain/area";
 import { Size } from "./domain/common";
 import { AreaGenerator, GeneratorConfig } from "./generator/base";
 import { readStructuredFile } from "./util";
-import { AreaModifier, modifier } from "./modifier/base";
+import { ModifierWithConfig } from "./modifier/base";
 
 export class Config {
 
     constructor(
         readonly size: Size,
         readonly generator: AreaGenerator<GeneratorConfig>,
-        readonly modifiers: AreaModifier<any>[]
+        readonly modifiers: ModifierWithConfig<any>[]
     ) { }
 
     static fromArgs(args: Arguments): Config {
@@ -18,9 +18,9 @@ export class Config {
             // TODO Handle/Merge other args
             return Config.fromFile(args.config);
         } else {
-            let modifiers: AreaModifier<any>[] = [];
+            let modifiers: ModifierWithConfig<any>[] = [];
             if (args.modifier !== undefined) {
-                args.modifier.forEach(name => modifiers.push(modifier(name)))
+                modifiers.push(...args.modifier);
             }
             return new Config(
                 Config.sizeFromArgs(args),
@@ -31,6 +31,7 @@ export class Config {
     }
 
     static fromFile(path: string): Config {
+        // TODO Allow generator/modifier configs
         let args: Arguments = readStructuredFile(path);
         args.config = undefined;
         return Config.fromArgs(args);
@@ -52,8 +53,8 @@ export class Amazer {
 
     generate(): Area {
         let area = this.config.generator(this.config);
-        for (let modifier of this.config.modifiers) {
-            area = modifier(area, this.config);
+        for (let m of this.config.modifiers) {
+            area = m.modifier(area, {...m.config});
         }
         return area;
     }

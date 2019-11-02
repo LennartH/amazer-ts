@@ -5,6 +5,7 @@ import { Config, amazer } from "./lib";
 import { parseSize, areaToString } from "./util";
 import { AreaGenerator, generator, GeneratorConfig } from "./generator/base";
 import { RecursiveBacktracker } from "./generator/simple";
+import { parseModifier, ModifierWithConfig } from "./modifier/base";
 
 
 const version = "0.1.0"
@@ -15,10 +16,15 @@ export interface Arguments {
     width?: number,
     height?: number,
     generator?: AreaGenerator<GeneratorConfig>,
-    modifier?: string[],
+    modifier?: ModifierWithConfig<any>[],
     [name: string]: any
 }
 
+function parseModifiers(modifierArgs: string[]): ModifierWithConfig<any>[] {
+    return modifierArgs.map(arg => parseModifier(arg));
+}
+
+// TODO Allow generator/modifier configs
 const cli = yargs
     .version(version)
     .showHelpOnFail(true)
@@ -57,11 +63,13 @@ const cli = yargs
             alias: "generator",
             coerce: generator,
             describe: "The name of the area generator to use",
-            default: RecursiveBacktracker.name.charAt(0).toUpperCase() + RecursiveBacktracker.name.slice(1)
+            default: RecursiveBacktracker.name.charAt(0).toUpperCase() + RecursiveBacktracker.name.slice(1),
+            requiresArg: true
         },
         m: {
             alias: "modifier",
             type: "array",
+            coerce: parseModifiers,
             describe: "The modifiers to apply after the generation",
             requiresArg: true
         }

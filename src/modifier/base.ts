@@ -8,9 +8,33 @@ export interface AreaModifier<C extends ModifierConfig> {
     (area: Area, config: C): Area;
 }
 
+export interface ModifierWithConfig<C extends ModifierConfig> {
+    readonly modifier: AreaModifier<C>;
+    readonly config?: C;
+}
+
 const modifiers: AreaModifier<any>[] = [
     Emmure, RemoveDeadends
 ]
+
+export function parseModifier<C extends ModifierConfig>(arg: string): ModifierWithConfig<C> {
+    const parts = arg.split(":");
+    const mod = modifier<C>(parts[0]);
+    let config: any = undefined;
+    if (parts.length > 1) {
+        const configArgs = parts[1].split(",");
+        if (mod === RemoveDeadends) {
+            const deadendsToRemove = Number(configArgs[0]);
+            if (isNaN(deadendsToRemove)) {
+                throw new Error(`The parameter for ${RemoveDeadends.name} must be a number but was ${configArgs[0]}`)
+            }
+            config = {
+                deadendsToRemove: deadendsToRemove
+            }
+        }
+    }
+    return {modifier: mod, config: config};
+}
 
 export function modifier<C extends ModifierConfig>(name: string): AreaModifier<C> {
     let cleanedName = name.charAt(0).toLowerCase() + name.slice(1);

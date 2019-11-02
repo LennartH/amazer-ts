@@ -9,7 +9,7 @@
             "request": "launch",
             "name": "Amazer",
             "program": "${workspaceFolder}/src/main.ts",
-            "args": ["-s", "25x25", "-g", "Nystrom", "-m", "RemoveDeadends"],
+            "args": ["-s", "25x25", "-g", "RecursiveBacktracker", "-m", "RemoveDeadends:0.5"],
             "preLaunchTask": "tsc: build - tsconfig.json",
             "outFiles": [
                 "${workspaceFolder}/dist/**/*.js"

@@ -28,8 +28,8 @@ function removeDeadends(area: Area, config: RemoveDeadendsConfig): Area {
         }
     }
 
-    let deadendsToRemove = config.deadendsToRemove || 0.6;
-    if (deadendsToRemove < 1) {
+    let deadendsToRemove = config.deadendsToRemove || 1;
+    if (deadendsToRemove <= 1) {
         deadendsToRemove = deadendsToRemove * collectedDeadends.length;
     }
     for (let deadend of collectedDeadends) {
@@ -55,16 +55,17 @@ function findDeadends(area: Area): Deadend[] {
 
 function asDeadend(area: Area, point: Vector): Deadend | undefined {
     const neighbours = area.neighbours(point, Direction.straights());
-    let wallsCount = 0;
+    let impassableCount = 0;
     let passableDirection: Direction | undefined = undefined;
-    for (let k in neighbours) {
-        if (!neighbours[k].passable) {
-            wallsCount++;
+    for (let direction of Direction.straights()) {
+        const neighbour = neighbours[direction.name];
+        if (neighbour === undefined || !neighbour.passable) {
+            impassableCount++;
         } else {
-            passableDirection = Direction.forName(k);
+            passableDirection = direction;
         }
     }
-    return wallsCount >= 3 ? {point: point, passableDirection: passableDirection} : undefined;
+    return impassableCount >= 3 ? {point: point, passableDirection: passableDirection} : undefined;
 }
 
 interface Deadend {
