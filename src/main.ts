@@ -1,5 +1,3 @@
-import _ from "lodash";
-
 import yargs from "yargs";
 import { Config, amazer } from "./lib";
 import { parseSize, areaToString } from "./util";
@@ -75,13 +73,17 @@ const cli = yargs
         }
     });
 
-if (process.argv.length <= 2) {
-    console.log("No arguments where given")
+try {
+    if (process.argv.length <= 2) {
+        throw new Error("No arguments where given");
+    } else {
+        let args: Arguments = cli.argv;
+        let config = Config.fromArgs(args);
+        let area = amazer(config).generate();
+        console.log(areaToString(area));
+    }
+} catch (e) {
+    console.log(e.message + "\n");
     cli.showHelp();
     process.exit(1);
-} else {
-    let args: Arguments = cli.argv;
-    let config = Config.fromArgs(args);
-    let area = amazer(config).generate();
-    console.log(areaToString(area));
 }
