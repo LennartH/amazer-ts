@@ -28,6 +28,16 @@ export class Vector implements Point {
     translate(direction: {dx?: number, dy?: number}, times=1): Vector {
         return new Vector(this.x + (direction.dx || 0) * times, this.y + (direction.dy || 0) * times);
     }
+
+    distance(other: Point): number {
+        const dx = other.x - this.x;
+        const dy = other.y - this.y;
+        return Math.sqrt(dx*dx + dy*dy);
+    }
+
+    equals(other: Point): boolean {
+        return this.x === other.x && this.y === other.y;
+    }
 }
 
 export class Rectangle {
