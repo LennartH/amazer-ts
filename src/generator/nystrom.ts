@@ -141,8 +141,9 @@ class _NystromConfig implements NystromConfig {
     }
 
     private defaultMinRoomSize(): Size {
-        const width = this.size.width * _NystromConfig.defaultMinSizeFactor;
-        const height = this.size.height * _NystromConfig.defaultMinSizeFactor;
+        const baseSize = Math.round((this.size.width + this.size.height) * 0.5);
+        const width = baseSize * _NystromConfig.defaultMinSizeFactor;
+        const height = baseSize * _NystromConfig.defaultMinSizeFactor;
         return {
             width: Math.max(_NystromConfig.minMinRoomSize, width),
             height: Math.max(_NystromConfig.minMinRoomSize, height)
@@ -150,8 +151,9 @@ class _NystromConfig implements NystromConfig {
     }
 
     private defaultMaxRoomSize(): Size {
-        const width = this.size.width * _NystromConfig.defaultMaxSizeFactor;
-        const height = this.size.height * _NystromConfig.defaultMaxSizeFactor;
+        const baseSize = Math.round((this.size.width + this.size.height) * 0.5);
+        const width = baseSize * _NystromConfig.defaultMaxSizeFactor;
+        const height = baseSize * _NystromConfig.defaultMaxSizeFactor;
         return {
             width: Math.max(_NystromConfig.minMaxRoomSize, width),
             height: Math.max(_NystromConfig.minMaxRoomSize, height)
