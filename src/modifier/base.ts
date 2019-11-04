@@ -1,6 +1,7 @@
 import { Area } from "../domain/area";
 import { Emmure } from "./simple";
 import { RemoveDeadends } from "./removeDeadends";
+import { BreakPassages } from "./breakPassages";
 
 export interface ModifierConfig { }
 
@@ -14,7 +15,7 @@ export interface ModifierWithConfig<C extends ModifierConfig> {
 }
 
 const modifiers: AreaModifier<any>[] = [
-    Emmure, RemoveDeadends
+    Emmure, RemoveDeadends, BreakPassages
 ]
 
 export function parseModifier<C extends ModifierConfig>(arg: string): ModifierWithConfig<C> {
