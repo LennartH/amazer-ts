@@ -2,6 +2,52 @@ import fs from "fs";
 import yaml from "js-yaml";
 import { Area, Tile } from "./domain/area";
 
+
+export interface Field {
+    name: string,
+    parser: Parser<any>
+}
+
+export interface Parser<T> {
+    (value: string): T
+}
+
+// TODO Split into function that takes a single string and one that takes an object
+export function parseConfig<C>(arg: string, fields: Field[], fieldsSeparator=",", valueSeparator="=", ignoreField="_"): C {
+    const config: any = {};
+    const fieldArgs = arg.split(fieldsSeparator);
+    const fieldsByName: any = {};
+    fields.forEach(f => fieldsByName[f.name] = f);
+
+    let inKwargs = false;
+    for (let i = 0; i < fieldArgs.length; i++) {
+        const fieldArg = fieldArgs[i];
+        const isKwarg = fieldArg.includes(valueSeparator);
+        if (!isKwarg && inKwargs) {
+            throw new Error("Using positional arguments as after keyword arguments is forbidden")
+        }
+
+        let field: Field;
+        let value: string;
+        if (isKwarg) {
+            // FIXME handle unknown field names
+            const fieldArgSplit = fieldArg.split(valueSeparator);
+            field = fieldsByName[fieldArgSplit[0]];
+            value = fieldArgSplit[1];
+            inKwargs = true;
+        } else {
+            field = fields[i];
+            value = fieldArg;
+        }
+
+        if (value !== ignoreField) {
+            config[field.name] = field.parser(value);
+        }
+    }
+
+    return config;
+}
+
 export function parseSize(size: string): [number, number] {
     let parts: string[] = size.split("x");
     return [Number(parts[0]), Number(parts[1])]

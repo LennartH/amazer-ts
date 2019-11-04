@@ -3,11 +3,16 @@ import _ from "lodash";
 import { AreaModifier, ModifierConfig } from "./base";
 import { Area, Tile } from "../domain/area";
 import { Vector, Direction } from "../domain/common";
+import { Field } from "../util";
 
 
-interface RemoveDeadendsConfig extends ModifierConfig {
+export interface RemoveDeadendsConfig extends ModifierConfig {
     readonly deadendsToRemove?: number;
 }
+
+export const RemoveDeadendsConfigFields: Field[] = [
+    {name: "deadendsToRemove", parser: Number}
+]
 
 const DeadendTile = Tile.impassable("Deadend");
 

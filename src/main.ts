@@ -6,6 +6,7 @@ import { RecursiveBacktracker } from "./generator/simple";
 import { parseModifier, ModifierWithConfig } from "./modifier/base";
 
 
+// TODO Add logging
 const version = "0.1.0"
 
 export interface Arguments {

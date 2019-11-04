@@ -1,7 +1,8 @@
 import { Area } from "../domain/area";
 import { Emmure } from "./simple";
-import { RemoveDeadends } from "./removeDeadends";
-import { BreakPassages } from "./breakPassages";
+import { RemoveDeadends, RemoveDeadendsConfigFields } from "./removeDeadends";
+import { BreakPassages, BreakPassagesConfigFields } from "./breakPassages";
+import { Field, parseConfig } from "../util";
 
 export interface ModifierConfig { }
 
@@ -18,21 +19,16 @@ const modifiers: AreaModifier<any>[] = [
     Emmure, RemoveDeadends, BreakPassages
 ]
 
+const modifierConfigFields: Map<AreaModifier<any>, Field[]> = new Map();
+modifierConfigFields.set(RemoveDeadends, RemoveDeadendsConfigFields);
+modifierConfigFields.set(BreakPassages, BreakPassagesConfigFields);
+
 export function parseModifier<C extends ModifierConfig>(arg: string): ModifierWithConfig<C> {
     const parts = arg.split(":");
     const mod = modifier<C>(parts[0]);
     let config: any = undefined;
-    if (parts.length > 1) {
-        const configArgs = parts[1].split(",");
-        if (mod === RemoveDeadends) {
-            const deadendsToRemove = Number(configArgs[0]);
-            if (isNaN(deadendsToRemove)) {
-                throw new Error(`The parameter for ${RemoveDeadends.name} must be a number but was ${configArgs[0]}`)
-            }
-            config = {
-                deadendsToRemove: deadendsToRemove
-            }
-        }
+    if (parts.length > 1 && modifierConfigFields.has(mod)) {
+        config = parseConfig(parts[1], modifierConfigFields.get(mod)!);
     }
     return {modifier: mod, config: config};
 }
