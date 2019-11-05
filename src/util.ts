@@ -41,16 +41,36 @@ export function parseConfig<C>(arg: string, fields: Field[], fieldsSeparator=","
         }
 
         if (value !== ignoreField) {
-            config[field.name] = field.parser(value);
+            try {
+                config[field.name] = field.parser(value);
+            } catch (error) {
+                throw new Error(`Error parsing field ${field.name}: ${error.message}`);
+            }
         }
     }
 
     return config;
 }
 
+// TODO Fail if not a number or more than 2 parts
 export function parseSize(size: string): [number, number] {
     let parts: string[] = size.split("x");
-    return [Number(parts[0]), Number(parts[1])]
+    if (parts.length != 2) {
+        throw new Error(`The given value '${size}' does not match the required format WIDTHxHEIGHT`);
+    }
+    try {
+        return [Number(parts[0]), Number(parts[1])]
+    } catch (error) {
+        throw new Error(`The values of the given size '${size}' can not be parsed as number`);
+    }
+}
+
+export function parseNumber(number: string): number {
+    const value = Number(number);
+    if (isNaN(value)) {
+        throw new Error(`The given value '${number}' is not a number`);
+    }
+    return value;
 }
 
 export function areaToString(area: Area): string {

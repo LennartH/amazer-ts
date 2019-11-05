@@ -28,7 +28,11 @@ export function parseModifier<C extends ModifierConfig>(arg: string): ModifierWi
     const mod = modifier<C>(parts[0]);
     let config: any = undefined;
     if (parts.length > 1 && modifierConfigFields.has(mod)) {
-        config = parseConfig(parts[1], modifierConfigFields.get(mod)!);
+        try {
+            config = parseConfig(parts[1], modifierConfigFields.get(mod)!);
+        } catch (error) {
+            throw new Error(`Error parsing modifier ${mod.name}: ${error.message}`);
+        }
     }
     return {modifier: mod, config: config};
 }

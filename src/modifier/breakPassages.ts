@@ -4,7 +4,7 @@ import { ModifierConfig, AreaModifier } from "./base";
 import { Area, Tile } from "../domain/area";
 import { Vector, Direction } from "../domain/common";
 import { findPath } from "../solver";
-import { Field } from "../util";
+import { Field, parseNumber } from "../util";
 
 
 export interface BreakPassagesConfig extends ModifierConfig {
@@ -13,8 +13,8 @@ export interface BreakPassagesConfig extends ModifierConfig {
 }
 
 export const BreakPassagesConfigFields: Field[] = [
-    {name: "amount", parser: Number},
-    {name: "minimumShortcutDistance", parser: Number},
+    {name: "amount", parser: parseNumber},
+    {name: "minimumShortcutDistance", parser: parseNumber},
 ]
 
 export const BreakPassages: AreaModifier<BreakPassagesConfig> = breakPassages;
