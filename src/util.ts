@@ -1,6 +1,7 @@
 import fs from "fs";
 import yaml from "js-yaml";
 import { Area, Tile } from "./domain/area";
+import { Size } from "./domain/common";
 
 
 export interface Field {
@@ -53,13 +54,13 @@ export function parseConfig<C>(arg: string, fields: Field[], fieldsSeparator=","
 }
 
 // TODO Fail if not a number or more than 2 parts
-export function parseSize(size: string): [number, number] {
+export function parseSize(size: string): Size {
     let parts: string[] = size.split("x");
     if (parts.length != 2) {
         throw new Error(`The given value '${size}' does not match the required format WIDTHxHEIGHT`);
     }
     try {
-        return [Number(parts[0]), Number(parts[1])]
+        return {width: parseNumber(parts[0]), height: parseNumber(parts[1])}
     } catch (error) {
         throw new Error(`The values of the given size '${size}' can not be parsed as number`);
     }

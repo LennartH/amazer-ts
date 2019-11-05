@@ -4,6 +4,7 @@ import { AreaGenerator, GeneratorConfig } from "./base";
 import { Area, Tile, floodFill } from "../domain/area";
 import { Size, Vector, Rectangle, Direction } from "../domain/common";
 import { recursiveBacktrack } from "./simple";
+import { Field, parseSize, parseNumber } from "../util";
 
 
 export interface NystromConfig extends GeneratorConfig {
@@ -11,6 +12,12 @@ export interface NystromConfig extends GeneratorConfig {
     readonly maxRoomSize?: Size;
     readonly roomPlacementAttempts?: number;
 }
+
+export const NystromConfigFields: Field[] = [
+    {name: "roomPlacementAttempts", parser: parseNumber},
+    {name: "minRoomSize", parser: parseSize},
+    {name: "maxRoomSize", parser: parseSize},
+]
 
 export const Nystrom: AreaGenerator<NystromConfig> = nystrom;
 

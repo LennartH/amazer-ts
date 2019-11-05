@@ -17,7 +17,7 @@ export interface ModifierWithConfig<C extends ModifierConfig> {
 
 const modifiers: AreaModifier<any>[] = [
     Emmure, RemoveDeadends, BreakPassages
-]
+];
 
 const modifierConfigFields: Map<AreaModifier<any>, Field[]> = new Map();
 modifierConfigFields.set(RemoveDeadends, RemoveDeadendsConfigFields);

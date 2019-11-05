@@ -2,7 +2,8 @@ import { Area } from "../domain/area";
 import { Vector, Direction, Size } from "../domain/common";
 import { RecursiveBacktracker, RandomArea, RandomizedKruskal, RandomizedPrim } from "./simple";
 import _ from "lodash";
-import { Nystrom } from "./nystrom";
+import { Nystrom, NystromConfigFields } from "./nystrom";
+import { Field, parseConfig } from "../util";
 
 
 export interface GeneratorConfig {
@@ -13,9 +14,31 @@ export interface AreaGenerator<C extends GeneratorConfig> {
     (config: C): Area;
 }
 
+export interface GeneratorWithConfig<C extends GeneratorConfig> {
+    readonly generator: AreaGenerator<C>;
+    readonly config?: C;
+}
+
 const generators: AreaGenerator<any>[] = [
     RecursiveBacktracker, RandomizedKruskal, RandomizedPrim, RandomArea, Nystrom
 ];
+
+const generatorConfigFields: Map<AreaGenerator<any>, Field[]> = new Map();
+generatorConfigFields.set(Nystrom, NystromConfigFields);
+
+export function parseGenerator<C extends GeneratorConfig>(arg: string): GeneratorWithConfig<C> {
+    const parts = arg.split(":");
+    const gen = generator<C>(parts[0]);
+    let config: any = undefined;
+    if (parts.length > 1 && generatorConfigFields.has(gen)) {
+        try {
+            config = parseConfig(parts[1], generatorConfigFields.get(gen)!);
+        } catch (error) {
+            throw new Error(`Error parsing generator ${gen.name}: ${error.message}`);
+        }
+    }
+    return {generator: gen, config: config};
+}
 
 export function generator<C extends GeneratorConfig>(name: string): AreaGenerator<C> {
     let cleanedName = name.charAt(0).toLowerCase() + name.slice(1);

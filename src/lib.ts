@@ -1,7 +1,7 @@
 import { Arguments } from "./main";
 import { Area } from "./domain/area";
 import { Size } from "./domain/common";
-import { AreaGenerator, GeneratorConfig } from "./generator/base";
+import { GeneratorWithConfig, GeneratorConfig } from "./generator/base";
 import { readStructuredFile } from "./util";
 import { ModifierWithConfig } from "./modifier/base";
 
@@ -9,7 +9,7 @@ export class Config {
 
     constructor(
         readonly size: Size,
-        readonly generator: AreaGenerator<GeneratorConfig>,
+        readonly generator: GeneratorWithConfig<any>,
         readonly modifiers: ModifierWithConfig<any>[]
     ) { }
 
@@ -38,9 +38,9 @@ export class Config {
     }
     
     private static sizeFromArgs(args: Arguments): Size {
-        if (args.size) {
-            return {width: args.size[0], height: args.size[1]};
-        } else if (args.width && args.height) {
+        if (args.size !== undefined) {
+            return args.size;
+        } else if (args.width !== undefined && args.height !== undefined) {
             return {width: args.width, height: args.height};
         } else {
             throw new Error("The area size could not be determined");
@@ -52,7 +52,8 @@ export class Amazer {
     constructor(readonly config: Config) { }
 
     generate(): Area {
-        let area = this.config.generator(this.config);
+        const generatorConfig: GeneratorConfig = {size: this.config.size, ...this.config.generator.config};
+        let area = this.config.generator.generator(generatorConfig);
         for (let m of this.config.modifiers) {
             area = m.modifier(area, {...m.config});
         }

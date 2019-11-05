@@ -1,9 +1,10 @@
 import yargs from "yargs";
 import { Config, amazer } from "./lib";
 import { parseSize, areaToString } from "./util";
-import { AreaGenerator, generator, GeneratorConfig } from "./generator/base";
+import { GeneratorWithConfig, parseGenerator } from "./generator/base";
 import { RecursiveBacktracker } from "./generator/simple";
 import { parseModifier, ModifierWithConfig } from "./modifier/base";
+import { Size } from "./domain/common";
 
 
 // TODO Add logging
@@ -11,10 +12,10 @@ const version = "0.1.0"
 
 export interface Arguments {
     config?: string,
-    size?: [number, number],
+    size?: Size,
     width?: number,
     height?: number,
-    generator?: AreaGenerator<GeneratorConfig>,
+    generator?: GeneratorWithConfig<any>,
     modifier?: ModifierWithConfig<any>[],
     [name: string]: any
 }
@@ -60,8 +61,8 @@ const cli = yargs
         },
         g: {
             alias: "generator",
-            coerce: generator,
-            describe: "The name of the area generator to use",
+            coerce: parseGenerator,
+            describe: "The area generator to use",
             default: RecursiveBacktracker.name.charAt(0).toUpperCase() + RecursiveBacktracker.name.slice(1),
             requiresArg: true
         },
