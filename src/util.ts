@@ -17,6 +17,14 @@ export interface Dict<T> {
     [name: string]: T
 }
 
+export function configFrom<C>(data: any, fields: Field[]): C {
+    if (typeof data === "string") {
+        return configFromArgs(data, fields);
+    } else {
+        return configFromObject(data, fields);
+    }
+}
+
 export function configFromArgs<C>(args: string, fields: Field[], fieldsSeparator=",", valueSeparator="=", ignoreField="_"): C {
     const fieldsByName: Dict<Field> = {};
     fields.forEach(f => fieldsByName[f.name] = f);

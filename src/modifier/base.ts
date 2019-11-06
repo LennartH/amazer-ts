@@ -2,7 +2,7 @@ import { Area } from "../domain/area";
 import { Emmure } from "./simple";
 import { RemoveDeadends, RemoveDeadendsConfigFields } from "./removeDeadends";
 import { BreakPassages, BreakPassagesConfigFields } from "./breakPassages";
-import { Field, configFromArgs } from "../util";
+import { Field, configFrom } from "../util";
 
 export interface ModifierConfig { }
 
@@ -23,15 +23,25 @@ const modifierConfigFields: Map<AreaModifier<any>, Field[]> = new Map();
 modifierConfigFields.set(RemoveDeadends, RemoveDeadendsConfigFields);
 modifierConfigFields.set(BreakPassages, BreakPassagesConfigFields);
 
-export function parseModifier<C extends ModifierConfig>(arg: string): ModifierWithConfig<C> {
-    const parts = arg.split(":");
-    const mod = modifier<C>(parts[0]);
+export function parseModifier<C extends ModifierConfig>(arg: any): ModifierWithConfig<C> {
+    let modifierName: string;
+    let configData: any;
+    if (typeof arg === "string") {
+        const parts = arg.split(":");
+        modifierName = parts[0];
+        configData = parts[1];
+    } else {
+        modifierName = Object.keys(arg)[0];
+        configData = arg[modifierName];
+    }
+
+    const mod = modifier<C>(modifierName);
     let config: any = undefined;
-    if (parts.length > 1 && modifierConfigFields.has(mod)) {
+    if (configData !== undefined && modifierConfigFields.has(mod)) {
         try {
-            config = configFromArgs(parts[1], modifierConfigFields.get(mod)!);
+            config = configFrom(configData, modifierConfigFields.get(mod)!);
         } catch (error) {
-            throw new Error(`Error parsing modifier ${mod.name}: ${error.message}`);
+            throw new Error(`Error parsing generator ${mod.name}: ${error.message}`);
         }
     }
     return {modifier: mod, config: config};

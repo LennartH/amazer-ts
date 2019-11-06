@@ -8,6 +8,8 @@ import { Size } from "./domain/common";
 
 
 // TODO Add logging
+// TODO Cleanup the config mess
+
 const version = "0.1.0"
 
 export interface Arguments {
@@ -24,7 +26,9 @@ function parseModifiers(modifierArgs: string[]): ModifierWithConfig<any>[] {
     return modifierArgs.map(arg => parseModifier(arg));
 }
 
-// TODO Allow generator/modifier configs
+// TODO Option to save params as config
+// TODO Option to save area
+// TODO Option for interactive session (generate areas until exit and save them on demand)
 const cli = yargs
     .version(version)
     .showHelpOnFail(true)

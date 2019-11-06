@@ -3,7 +3,7 @@ import { Vector, Direction, Size } from "../domain/common";
 import { RecursiveBacktracker, RandomArea, RandomizedKruskal, RandomizedPrim } from "./simple";
 import _ from "lodash";
 import { Nystrom, NystromConfigFields } from "./nystrom";
-import { Field, configFromArgs } from "../util";
+import { Field, configFrom } from "../util";
 
 
 export interface GeneratorConfig {
@@ -26,13 +26,23 @@ const generators: AreaGenerator<any>[] = [
 const generatorConfigFields: Map<AreaGenerator<any>, Field[]> = new Map();
 generatorConfigFields.set(Nystrom, NystromConfigFields);
 
-export function parseGenerator<C extends GeneratorConfig>(arg: string): GeneratorWithConfig<C> {
-    const parts = arg.split(":");
-    const gen = generator<C>(parts[0]);
+export function parseGenerator<C extends GeneratorConfig>(arg: any): GeneratorWithConfig<C> {
+    let generatorName: string;
+    let configData: any;
+    if (typeof arg === "string") {
+        const parts = arg.split(":");
+        generatorName = parts[0];
+        configData = parts[1];
+    } else {
+        generatorName = Object.keys(arg)[0];
+        configData = arg[generatorName];
+    }
+
+    const gen = generator<C>(generatorName);
     let config: any = undefined;
-    if (parts.length > 1 && generatorConfigFields.has(gen)) {
+    if (configData !== undefined && generatorConfigFields.has(gen)) {
         try {
-            config = configFromArgs(parts[1], generatorConfigFields.get(gen)!);
+            config = configFrom(configData, generatorConfigFields.get(gen)!);
         } catch (error) {
             throw new Error(`Error parsing generator ${gen.name}: ${error.message}`);
         }
