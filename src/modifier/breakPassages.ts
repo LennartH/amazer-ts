@@ -27,7 +27,7 @@ function breakPassages(area: Area, config: BreakPassagesConfig): Area {
     while (amount >= 0 && candidates.length > 0) {
         const candidate = candidates.pop()!;
         const path = findPath(area, candidate.neighbour1, candidate.neighbour2);
-        if (path !== undefined && path.length >= minimumShortcutDistance) {
+        if (path === undefined || path.length >= minimumShortcutDistance) {
             area.set(candidate.point, Tile.Floor);
             amount--;
         }
