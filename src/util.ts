@@ -13,13 +13,16 @@ export interface Parser<T> {
     (value: string): T
 }
 
-// TODO Split into function that takes a single string and one that takes an object
-export function parseConfig<C>(arg: string, fields: Field[], fieldsSeparator=",", valueSeparator="=", ignoreField="_"): C {
-    const config: any = {};
-    const fieldArgs = arg.split(fieldsSeparator);
-    const fieldsByName: any = {};
-    fields.forEach(f => fieldsByName[f.name] = f);
+export interface Dict<T> {
+    [name: string]: T
+}
 
+export function configFromArgs<C>(args: string, fields: Field[], fieldsSeparator=",", valueSeparator="=", ignoreField="_"): C {
+    const fieldsByName: Dict<Field> = {};
+    fields.forEach(f => fieldsByName[f.name] = f);
+    
+    const configData: Dict<string> = {};
+    const fieldArgs = args.split(fieldsSeparator);
     let inKwargs = false;
     for (let i = 0; i < fieldArgs.length; i++) {
         const fieldArg = fieldArgs[i];
@@ -42,18 +45,30 @@ export function parseConfig<C>(arg: string, fields: Field[], fieldsSeparator=","
         }
 
         if (value !== ignoreField) {
-            try {
-                config[field.name] = field.parser(value);
-            } catch (error) {
-                throw new Error(`Error parsing field ${field.name}: ${error.message}`);
-            }
+            configData[field.name] = value;
         }
     }
 
+    return configFromObject(configData, fields);
+}
+
+export function configFromObject<C>(data: Dict<string>, fields: Field[]): C {
+    const fieldsByName: Dict<Field> = {};
+    fields.forEach(f => fieldsByName[f.name] = f);
+
+    const config: any = {};
+    for (let fieldName in data) {
+        const value = data[fieldName];
+        const field = fieldsByName[fieldName];
+        try {
+            config[field.name] = field.parser(value);
+        } catch (error) {
+            throw new Error(`Error parsing field ${field.name}: ${error.message}`);
+        }
+    }
     return config;
 }
 
-// TODO Fail if not a number or more than 2 parts
 export function parseSize(size: string): Size {
     let parts: string[] = size.split("x");
     if (parts.length != 2) {

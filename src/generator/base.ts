@@ -3,7 +3,7 @@ import { Vector, Direction, Size } from "../domain/common";
 import { RecursiveBacktracker, RandomArea, RandomizedKruskal, RandomizedPrim } from "./simple";
 import _ from "lodash";
 import { Nystrom, NystromConfigFields } from "./nystrom";
-import { Field, parseConfig } from "../util";
+import { Field, configFromArgs } from "../util";
 
 
 export interface GeneratorConfig {
@@ -32,7 +32,7 @@ export function parseGenerator<C extends GeneratorConfig>(arg: string): Generato
     let config: any = undefined;
     if (parts.length > 1 && generatorConfigFields.has(gen)) {
         try {
-            config = parseConfig(parts[1], generatorConfigFields.get(gen)!);
+            config = configFromArgs(parts[1], generatorConfigFields.get(gen)!);
         } catch (error) {
             throw new Error(`Error parsing generator ${gen.name}: ${error.message}`);
         }

@@ -2,7 +2,7 @@ import { Area } from "../domain/area";
 import { Emmure } from "./simple";
 import { RemoveDeadends, RemoveDeadendsConfigFields } from "./removeDeadends";
 import { BreakPassages, BreakPassagesConfigFields } from "./breakPassages";
-import { Field, parseConfig } from "../util";
+import { Field, configFromArgs } from "../util";
 
 export interface ModifierConfig { }
 
@@ -29,7 +29,7 @@ export function parseModifier<C extends ModifierConfig>(arg: string): ModifierWi
     let config: any = undefined;
     if (parts.length > 1 && modifierConfigFields.has(mod)) {
         try {
-            config = parseConfig(parts[1], modifierConfigFields.get(mod)!);
+            config = configFromArgs(parts[1], modifierConfigFields.get(mod)!);
         } catch (error) {
             throw new Error(`Error parsing modifier ${mod.name}: ${error.message}`);
         }
