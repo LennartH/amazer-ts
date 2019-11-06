@@ -1,9 +1,9 @@
 import { Arguments } from "./main";
 import { Area } from "./domain/area";
 import { Size } from "./domain/common";
-import { GeneratorWithConfig, GeneratorConfig } from "./generator/base";
-import { readStructuredFile } from "./util";
-import { ModifierWithConfig } from "./modifier/base";
+import { GeneratorWithConfig, GeneratorConfig, parseGenerator } from "./generator/base";
+import { readStructuredFile, parseSize } from "./util";
+import { ModifierWithConfig, parseModifier } from "./modifier/base";
 
 export class Config {
 
@@ -14,7 +14,7 @@ export class Config {
     ) { }
 
     static fromArgs(args: Arguments): Config {
-        if (args.config) {
+        if (args.config !== undefined) {
             // TODO Handle/Merge other args
             return Config.fromFile(args.config);
         } else {
@@ -31,15 +31,28 @@ export class Config {
     }
 
     static fromFile(path: string): Config {
-        // TODO Allow generator/modifier configs
-        let args: Arguments = readStructuredFile(path);
-        args.config = undefined;
+        const fileContent = readStructuredFile(path);
+        const args: Arguments = {};
+        args.size = this.sizeFromArgs(fileContent);
+        if (fileContent.generator !== undefined) {
+            args.generator = parseGenerator(fileContent.generator);
+        }
+        if (fileContent.modifiers !== undefined) {
+            args.modifier = [];
+            for (let modifier of fileContent.modifiers) {
+                args.modifier.push(parseModifier(modifier));
+            }
+        }
         return Config.fromArgs(args);
     }
     
-    private static sizeFromArgs(args: Arguments): Size {
+    private static sizeFromArgs(args: any): Size {
         if (args.size !== undefined) {
-            return args.size;
+            if (typeof args.size === "string") {
+                return parseSize(args.size);
+            } else {
+                return args.size;
+            }
         } else if (args.width !== undefined && args.height !== undefined) {
             return {width: args.width, height: args.height};
         } else {
