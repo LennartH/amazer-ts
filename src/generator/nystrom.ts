@@ -48,6 +48,7 @@ function randomRoom(config: _NystromConfig) : Rectangle {
     const start = Vector.random(config.size, p => p.x % 2 === 0 && p.y % 2 === 0);
     let size: Size;
     do {
+        // TODO Don't force odd room sizes, instead configure a minimum room distance
         size = {
             width: _.random(config.minRoomSize.width, config.maxRoomSize.width),
             height: _.random(config.minRoomSize.height, config.maxRoomSize.height)

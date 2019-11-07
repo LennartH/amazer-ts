@@ -5,6 +5,7 @@ import { GeneratorWithConfig, parseGenerator } from "./generator/base";
 import { RecursiveBacktracker } from "./generator/simple";
 import { parseModifier, ModifierWithConfig } from "./modifier/base";
 import { Size } from "./domain/common";
+import serialize from "./serialize";
 
 
 // TODO Add logging
@@ -87,6 +88,7 @@ try {
         let config = Config.fromArgs(args);
         let area = amazer(config).generate();
         console.log(areaToString(area));
+        console.log(serialize.dumps(area));
     }
 } catch (e) {
     console.log(e.message + "\n");
