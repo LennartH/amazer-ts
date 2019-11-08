@@ -20,6 +20,8 @@ export interface Arguments {
     height?: number,
     generator?: GeneratorWithConfig<any>,
     modifier?: ModifierWithConfig<any>[],
+    silent?: boolean,
+    format?: serialize.WritableFormat,
     [name: string]: any
 }
 
@@ -28,11 +30,11 @@ function parseModifiers(modifierArgs: string[]): ModifierWithConfig<any>[] {
 }
 
 // TODO Option to save params as config
-// TODO Option to save area
 // TODO Option for interactive session (generate areas until exit and save them on demand)
 const cli = yargs
     .version(version)
     .showHelpOnFail(true)
+    .usage("Usage: $0 [-c | -s | -w -h] [OPTIONS] [<FILE>]")
     .options({
         c: {
             alias: "config",
@@ -77,6 +79,17 @@ const cli = yargs
             coerce: parseModifiers,
             describe: "The modifiers to apply after the generation",
             requiresArg: true
+        },
+        silent: {
+            type: "boolean",
+            describe: "Don't print the generated area"
+        },
+        f: {
+            alias: "format",
+            choices: ["binary", "base64", "plain"],
+            describe: "The format of the output file",
+            default: "binary",
+            requiresArg: true
         }
     });
 
@@ -87,12 +100,13 @@ try {
         let args: Arguments = cli.argv;
         let config = Config.fromArgs(args);
         let area = amazer(config).generate();
-        console.log(areaToString(area));
-
-        const base64 = serialize.toBase64(area);
-        console.log(base64);
-        const deserializedArea = serialize.fromBase64(base64);
-        console.log(areaToString(deserializedArea));
+        if (!args.silent) {
+            console.log(areaToString(area));
+        }
+        const outputPath = args._[0];
+        if (outputPath !== undefined) {
+            serialize.toFile(area, outputPath, args.format);
+        }
     }
 } catch (e) {
     console.log(e.message + "\n");
