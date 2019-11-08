@@ -88,7 +88,11 @@ try {
         let config = Config.fromArgs(args);
         let area = amazer(config).generate();
         console.log(areaToString(area));
-        console.log(serialize.dumps(area));
+
+        const base64 = serialize.toBase64(area);
+        console.log(base64);
+        const deserializedArea = serialize.fromBase64(base64);
+        console.log(areaToString(deserializedArea));
     }
 } catch (e) {
     console.log(e.message + "\n");

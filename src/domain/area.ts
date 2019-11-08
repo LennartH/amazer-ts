@@ -43,7 +43,7 @@ export class Area {
     }
 
     get size(): Size {
-        return this;
+        return {width: this.width, height: this.height};
     }
 
     *points(): Iterable<Vector> {
