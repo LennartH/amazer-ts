@@ -112,9 +112,32 @@ try {
         if (outputPath !== undefined) {
             serialize.toFile(area, outputPath, args.format);
         }
+        const configOutputPath = getConfigOutputPath(args);
+        console.log(configOutputPath);
     }
 } catch (e) {
     console.log(e.message + "\n");
     cli.showHelp();
     process.exit(1);
 }
+
+function getConfigOutputPath(args: Arguments): string | undefined {
+    if (args.saveConfig === undefined || (args.saveConfig.indexOf(".") <= 0 && args._.length === 0)) {
+        return undefined;
+    }
+    
+    const dotIndex = args.saveConfig.indexOf(".");
+    if (dotIndex > 0) {
+        return args.saveConfig;
+    } else {
+        const saveConfig = args.saveConfig.length == 0 ? "yml" : args.saveConfig;
+        const outputPath: string = args._[0];
+        const filename = outputPath.substr(0, outputPath.length - outputPath.lastIndexOf(".") + 1);
+        const configType = saveConfig.substr(dotIndex + 1);
+        return `${filename}.${configType}`
+    }
+}
+
+// function saveConfig(path: string, config: Config) {
+
+// }
