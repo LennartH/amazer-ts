@@ -22,6 +22,7 @@ export interface Arguments {
     modifier?: ModifierWithConfig<any>[],
     silent?: boolean,
     format?: serialize.WritableFormat,
+    saveConfig?: string,
     [name: string]: any
 }
 
@@ -90,6 +91,10 @@ const cli = yargs
             describe: "The format of the output file",
             default: "binary",
             requiresArg: true
+        },
+        saveConfig: {
+            type: "string",
+            describe: "File type or filename to store the used configuration in",
         }
     });
 
