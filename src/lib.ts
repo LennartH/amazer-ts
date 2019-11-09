@@ -2,7 +2,7 @@ import { Arguments } from "./main";
 import { Area } from "./domain/area";
 import { Size } from "./domain/common";
 import { GeneratorWithConfig, GeneratorConfig, parseGenerator } from "./generator/base";
-import { readStructuredFile, parseSize } from "./util";
+import { readStructuredFile } from "./util";
 import { ModifierWithConfig, parseModifier } from "./modifier/base";
 
 export class Config {
@@ -49,7 +49,7 @@ export class Config {
     private static sizeFromArgs(args: any): Size {
         if (args.size !== undefined) {
             if (typeof args.size === "string") {
-                return parseSize(args.size);
+                return Size.fromString(args.size);
             } else {
                 return args.size;
             }

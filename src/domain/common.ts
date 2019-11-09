@@ -1,8 +1,27 @@
 import _ from "lodash";
+import { parseNumber } from "../util";
 
 export interface Size {
     width: number;
     height: number;
+}
+
+export namespace Size {
+    export function stringify(size: Size): string {
+        return `${size.width}x${size.height}`;
+    }
+
+    export function fromString(value: string): Size {
+        let parts: string[] = value.split("x");
+        if (parts.length != 2) {
+            throw new Error(`The given value '${value}' does not match the required format WIDTHxHEIGHT`);
+        }
+        try {
+            return {width: parseNumber(parts[0]), height: parseNumber(parts[1])}
+        } catch (error) {
+            throw new Error(`The values of the given size '${value}' can not be parsed as number`);
+        }
+    }
 }
 
 export interface Point {

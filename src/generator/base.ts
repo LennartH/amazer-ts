@@ -3,7 +3,7 @@ import { Vector, Direction, Size } from "../domain/common";
 import { RecursiveBacktracker, RandomArea, RandomizedKruskal, RandomizedPrim } from "./simple";
 import _ from "lodash";
 import { Nystrom, NystromConfigFields } from "./nystrom";
-import { Field, configFrom } from "../util";
+import { Field, configFrom, decapitalize } from "../util";
 
 
 export interface GeneratorConfig {
@@ -51,7 +51,7 @@ export function parseGenerator<C extends GeneratorConfig>(arg: any): GeneratorWi
 }
 
 export function generator<C extends GeneratorConfig>(name: string): AreaGenerator<C> {
-    let cleanedName = name.charAt(0).toLowerCase() + name.slice(1);
+    let cleanedName = decapitalize(name);
     const generator = generators.find(g => g.name == cleanedName);
     if (generator === undefined) {
         throw new Error(`No generator with name ${name} could be found`);

@@ -2,7 +2,7 @@ import { Area } from "../domain/area";
 import { Emmure } from "./simple";
 import { RemoveDeadends, RemoveDeadendsConfigFields } from "./removeDeadends";
 import { BreakPassages, BreakPassagesConfigFields } from "./breakPassages";
-import { Field, configFrom } from "../util";
+import { Field, configFrom, decapitalize } from "../util";
 
 export interface ModifierConfig { }
 
@@ -48,7 +48,7 @@ export function parseModifier<C extends ModifierConfig>(arg: any): ModifierWithC
 }
 
 export function modifier<C extends ModifierConfig>(name: string): AreaModifier<C> {
-    let cleanedName = name.charAt(0).toLowerCase() + name.slice(1);
+    let cleanedName = decapitalize(name);
     const modifier = modifiers.find(g => g.name == cleanedName);
     if (modifier === undefined) {
         throw new Error(`No modifier with name ${name} could be found`);

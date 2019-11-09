@@ -1,7 +1,6 @@
 import fs from "fs";
 import yaml from "js-yaml";
 import { Area, Tile } from "./domain/area";
-import { Size } from "./domain/common";
 
 
 export interface Field {
@@ -77,24 +76,20 @@ export function configFromObject<C>(data: Dict<string>, fields: Field[]): C {
     return config;
 }
 
-export function parseSize(size: string): Size {
-    let parts: string[] = size.split("x");
-    if (parts.length != 2) {
-        throw new Error(`The given value '${size}' does not match the required format WIDTHxHEIGHT`);
-    }
-    try {
-        return {width: parseNumber(parts[0]), height: parseNumber(parts[1])}
-    } catch (error) {
-        throw new Error(`The values of the given size '${size}' can not be parsed as number`);
-    }
-}
-
 export function parseNumber(number: string): number {
     const value = Number(number);
     if (isNaN(value)) {
         throw new Error(`The given value '${number}' is not a number`);
     }
     return value;
+}
+
+export function capitalize(s: string): string {
+    return s[0].toUpperCase() + s.substring(1);
+}
+
+export function decapitalize(s: string): string {
+    return s[0].toLowerCase() + s.substring(1);
 }
 
 export function areaToString(area: Area): string {
@@ -139,4 +134,21 @@ export function readStructuredFile(filePath: string): any {
             throw new Error(`Unable to read file type ${fileType}`);
     }
     return result;
+}
+
+export function writeStructuredFile(filePath: string, data: any) {
+    let [fileType] = filePath.split(".").slice(-1);
+    let output: string;
+    switch (fileType) {
+        case "yml":
+        case "yaml":
+            output = yaml.safeDump(data);
+            break;
+        case "json":
+            output = JSON.stringify(data);
+            break;
+        default:
+            throw new Error(`Unable to write file type ${fileType}`);
+    }
+    fs.writeFileSync(filePath, output, "utf8");
 }

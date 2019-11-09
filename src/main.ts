@@ -1,6 +1,7 @@
 import yargs from "yargs";
+import _ from "lodash";
 import { Config, amazer } from "./lib";
-import { parseSize, areaToString } from "./util";
+import { areaToString, Dict, writeStructuredFile, capitalize } from "./util";
 import { GeneratorWithConfig, parseGenerator } from "./generator/base";
 import { RecursiveBacktracker } from "./generator/simple";
 import { parseModifier, ModifierWithConfig } from "./modifier/base";
@@ -46,7 +47,7 @@ const cli = yargs
         s: {
             alias: "size",
             type: "string",
-            coerce: parseSize,
+            coerce: Size.fromString,
             describe: "The areas size as WIDTHxHEIGHT",
             conflicts: ["width", "height"],
             requiresArg: true
@@ -71,7 +72,7 @@ const cli = yargs
             alias: "generator",
             coerce: parseGenerator,
             describe: "The area generator to use",
-            default: RecursiveBacktracker.name.charAt(0).toUpperCase() + RecursiveBacktracker.name.slice(1),
+            default: capitalize(RecursiveBacktracker.name),
             requiresArg: true
         },
         m: {
@@ -113,7 +114,9 @@ try {
             serialize.toFile(area, outputPath, args.format);
         }
         const configOutputPath = getConfigOutputPath(args);
-        console.log(configOutputPath);
+        if (configOutputPath !== undefined) {
+            saveConfig(configOutputPath, config);
+        }
     }
 } catch (e) {
     console.log(e.message + "\n");
@@ -122,22 +125,61 @@ try {
 }
 
 function getConfigOutputPath(args: Arguments): string | undefined {
-    if (args.saveConfig === undefined || (args.saveConfig.indexOf(".") <= 0 && args._.length === 0)) {
+    if (args.saveConfig === undefined) {
         return undefined;
     }
-    
     const dotIndex = args.saveConfig.indexOf(".");
+    if (dotIndex <= 0 && args._.length === 0) {
+        return undefined;
+    }
     if (dotIndex > 0) {
         return args.saveConfig;
-    } else {
-        const saveConfig = args.saveConfig.length == 0 ? "yml" : args.saveConfig;
+    }
+
+    const saveConfig = args.saveConfig.length == 0 ? "yml" : args.saveConfig.substr(dotIndex + 1);
+    if (saveConfig === "yml" || saveConfig === "yaml" || saveConfig === "json") {
         const outputPath: string = args._[0];
         const filename = outputPath.substr(0, outputPath.length - outputPath.lastIndexOf(".") + 1);
-        const configType = saveConfig.substr(dotIndex + 1);
-        return `${filename}.${configType}`
+        return `${filename}.${saveConfig}`
+    } else {
+        return `${saveConfig}.yml`
     }
 }
 
-// function saveConfig(path: string, config: Config) {
+function saveConfig(path: string, config: Config) {
+    const data: Dict<any> = {};
+    data.size = Size.stringify(config.size);
+    data.generator = prepareFunctionWithConfig(config.generator.generator, config.generator.config);
+    const modifiers: any[] = [];
+    for (let modWithConfig of config.modifiers) {
+        modifiers.push(prepareFunctionWithConfig(modWithConfig.modifier, modWithConfig.config));
+    }
+    if (modifiers.length > 0) {
+        data.modifiers = modifiers;
+    }
+    writeStructuredFile(path, data);
+}
 
-// }
+function prepareFunctionWithConfig(func: Function, config: Dict<any> | undefined): any {
+    const capitalizedName = capitalize(func.name);
+    if (config === undefined) {
+        return capitalizedName;
+    } else {
+        return {[capitalizedName]: prepareConfig(config)};
+    }
+}
+
+function prepareConfig(config: Dict<any>): Dict<any> {
+    const result: Dict<any> = {};
+    for (let key in config) {
+        const value: any = config[key];
+        if (value !== undefined) {
+            let resultValue = value;
+            if (value instanceof Object && _.difference(Object.keys(value), ["width", "height"]).length === 0) {
+                resultValue = Size.stringify(value);
+            }
+            result[key] = resultValue;
+        }
+    }
+    return result;
+}
