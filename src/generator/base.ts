@@ -19,6 +19,7 @@ export interface GeneratorWithConfig<C extends GeneratorConfig> {
     readonly config?: C;
 }
 
+// TODO Reverse dependencies: User register function instead of static list
 const generators: AreaGenerator<any>[] = [
     RecursiveBacktracker, RandomizedKruskal, RandomizedPrim, RandomArea, Nystrom
 ];

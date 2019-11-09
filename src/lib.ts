@@ -4,19 +4,45 @@ import { Size } from "./domain/common";
 import { GeneratorWithConfig, GeneratorConfig, parseGenerator } from "./generator/base";
 import { readStructuredFile } from "./util";
 import { ModifierWithConfig, parseModifier } from "./modifier/base";
+import { RecursiveBacktracker } from "./generator/simple";
 
 export class Config {
 
-    constructor(
-        readonly size: Size,
-        readonly generator: GeneratorWithConfig<any>,
-        readonly modifiers: ModifierWithConfig<any>[]
-    ) { }
+    private _size: Size;
+    private _generator: GeneratorWithConfig<any>;
+    private _modifiers: ModifierWithConfig<any>[];
+
+    constructor(size: Size, generator: GeneratorWithConfig<any>, modifiers: ModifierWithConfig<any>[]) {
+        this._size = size;
+        this._generator = generator;
+        this._modifiers = modifiers;
+    }
+
+    get size(): Size {
+        return this._size;
+    }
+
+    get generator(): GeneratorWithConfig<any> {
+        return this._generator;
+    }
+
+    get modifiers(): ModifierWithConfig<any>[] {
+        return this._modifiers;
+    }
 
     static fromArgs(args: Arguments): Config {
         if (args.config !== undefined) {
-            // TODO Handle/Merge other args
-            return Config.fromFile(args.config);
+            const config = Config.fromFile(args.config);
+            try {
+                config._size = Config.sizeFromArgs(args);
+            } catch { }
+            if (args.generator !== undefined) {
+                config._generator = args.generator;
+            }
+            if (args.modifier !== undefined && args.modifier.length > 0) {
+                config._modifiers = args.modifier;
+            }
+            return config;
         } else {
             let modifiers: ModifierWithConfig<any>[] = [];
             if (args.modifier !== undefined) {
@@ -24,7 +50,7 @@ export class Config {
             }
             return new Config(
                 Config.sizeFromArgs(args),
-                args.generator!,
+                args.generator || {generator: RecursiveBacktracker, config: undefined},
                 modifiers
             );
         }

@@ -10,8 +10,7 @@
             "name": "Amazer",
             "program": "${workspaceFolder}/src/main.ts",
             // "args": ["-s", "25x25", "-g", "Nystrom:200,3x3,10x10", "-m", "RemoveDeadends:0.5"],
-            // "args": ["-c", "configs/complex-nystrom.yml"],
-            "args": ["-s", "2x2"],
+            "args": ["-c", "configs/complex-nystrom.yml"],
             "preLaunchTask": "tsc: build - tsconfig.json",
             "outFiles": [
                 "${workspaceFolder}/dist/**/*.js"

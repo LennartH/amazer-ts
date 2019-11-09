@@ -5,8 +5,8 @@ generator:
     minRoomSize: 5x5
     maxRoomSize: 10x10
 modifiers:
-  - Emmure
   - BreakPassages:
       amount: 50
       minimumShortcutDistance: 30
   - RemoveDeadends:0.8
+  - Emmure

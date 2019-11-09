@@ -15,6 +15,7 @@ export interface ModifierWithConfig<C extends ModifierConfig> {
     readonly config?: C;
 }
 
+// TODO Reverse dependencies: User register function instead of static list
 const modifiers: AreaModifier<any>[] = [
     Emmure, RemoveDeadends, BreakPassages
 ];

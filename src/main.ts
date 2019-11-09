@@ -31,7 +31,6 @@ function parseModifiers(modifierArgs: string[]): ModifierWithConfig<any>[] {
     return modifierArgs.map(arg => parseModifier(arg));
 }
 
-// TODO Option to save params as config
 // TODO Option for interactive session (generate areas until exit and save them on demand)
 const cli = yargs
     .version(version)
@@ -71,8 +70,7 @@ const cli = yargs
         g: {
             alias: "generator",
             coerce: parseGenerator,
-            describe: "The area generator to use",
-            default: capitalize(RecursiveBacktracker.name),
+            describe: `The area generator to use, defaults to ${capitalize(RecursiveBacktracker.name)}`,
             requiresArg: true
         },
         m: {
