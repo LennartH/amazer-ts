@@ -1,6 +1,6 @@
 import fs from "fs";
 import { Area, Tile } from "./domain/area";
-import { areaToString } from "./util";
+import { areaToString, writeFile } from "./util";
 
 export namespace serialize {
     export type ReadableFormat = "binary" | "base64";
@@ -22,7 +22,7 @@ export namespace serialize {
         } else {
             throw new Error(`Unsupported format ${format}`)
         }
-        fs.writeFileSync(path, data, fileFormat);
+        writeFile(path, data, fileFormat);
     }
 
     export function toBase64(area: Area): string {
