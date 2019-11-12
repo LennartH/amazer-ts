@@ -2,9 +2,9 @@ import { Arguments } from "./cli/main";
 import { Area } from "./domain/area";
 import { Size } from "./domain/common";
 import { GeneratorWithConfig, GeneratorConfig, parseGenerator } from "./generator/base";
-import { readStructuredFile } from "./util";
 import { ModifierWithConfig, parseModifier } from "./modifier/base";
 import { RecursiveBacktracker } from "./generator/simple";
+import { readStructuredFile } from "./cli/files";
 
 export class Config {
 
@@ -56,6 +56,7 @@ export class Config {
         }
     }
 
+    // TODO Move to cli/files
     static fromFile(path: string): Config {
         const fileContent = readStructuredFile(path);
         const args: Arguments = {};
@@ -101,6 +102,6 @@ export class Amazer {
 }
 
 // TODO Builder Pattern for Amazer
-export function amazer(config: Config): Amazer {
+export default function amazer(config: Config): Amazer {
     return new Amazer(config);
 }

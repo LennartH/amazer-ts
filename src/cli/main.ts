@@ -4,14 +4,14 @@ import yargs from "yargs";
 import readlineSync from "readline-sync";
 import _ from "lodash";
 import yaml from "js-yaml";
-import { Config, amazer } from "../amazer";
-import { areaToString, Dict, writeStructuredFile, capitalize } from "../util";
+import amazer, { Config } from "../amazer";
+import { areaToString, Dict, capitalize } from "../util";
 import { GeneratorWithConfig, parseGenerator } from "../generator/base";
 import { RecursiveBacktracker } from "../generator/simple";
 import { parseModifier, ModifierWithConfig } from "../modifier/base";
 import { Size } from "../domain/common";
-import serialize from "../serialize";
 import { Area } from "../domain/area";
+import { AreaWritableFormat, areaToFile, writeStructuredFile } from "./files";
 
 
 // TODO Add logging
@@ -28,7 +28,7 @@ export interface Arguments {
     generator?: GeneratorWithConfig<any>,
     modifier?: ModifierWithConfig<any>[],
     silent?: boolean,
-    format?: serialize.WritableFormat,
+    format?: AreaWritableFormat,
     saveConfig?: string,
     interactive?: string,
     [name: string]: any
@@ -127,7 +127,7 @@ try {
             }
             const outputPath = args._[0];
             if (outputPath !== undefined) {
-                serialize.toFile(area, outputPath, args.format);
+                areaToFile(area, outputPath, args.format);
             }
             const configOutputPath = getConfigOutputPath(args);
             if (configOutputPath !== undefined) {
@@ -173,7 +173,7 @@ function interactive(args: Arguments) {
                     case "save":
                         if (area !== undefined) {
                             const areaPath = determinePath(targetDirectory, commands[1]);
-                            serialize.toFile(area, areaPath, args.format);
+                            areaToFile(area, areaPath, args.format);
                         } else {
                             console.log("No area could be generated due to previous error. Saving not possible.");
                         }

@@ -1,6 +1,3 @@
-import fs from "fs";
-import path from "path";
-import yaml from "js-yaml";
 import { Area, Tile } from "./domain/area";
 
 
@@ -117,46 +114,4 @@ function _symbolFor(tile: Tile): string {
     } else {
         return "#";
     }
-}
-
-// TODO Move to separate file for files utilities
-export function readStructuredFile(filePath: string): any {
-    let [fileType] = filePath.split(".").slice(-1);
-    let fileContent: string = fs.readFileSync(filePath, "utf8");
-    let result: any;
-    switch (fileType) {
-        case "yml":
-        case "yaml":
-            result = yaml.safeLoad(fileContent);
-            break;
-        case "json":
-            result = JSON.parse(fileContent);
-            break;
-        default:
-            throw new Error(`Unable to read file type ${fileType}`);
-    }
-    return result;
-}
-
-export function writeStructuredFile(filePath: string, data: any) {
-    let [fileType] = filePath.split(".").slice(-1);
-    let output: string;
-    switch (fileType) {
-        case "yml":
-        case "yaml":
-            output = yaml.safeDump(data);
-            break;
-        case "json":
-            output = JSON.stringify(data);
-            break;
-        default:
-            throw new Error(`Unable to write file type ${fileType}`);
-    }
-    writeFile(filePath, output, "utf8");
-}
-
-export function writeFile(filePath: string, data: any, encoding?: string) {
-    const directory: string = path.dirname(filePath);
-    fs.mkdirSync(directory, {recursive: true});
-    fs.writeFileSync(filePath, data, encoding);
 }
