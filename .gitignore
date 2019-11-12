@@ -1,5 +1,6 @@
 *.mz
 dist
+areas
 
 
 # Created by https://www.gitignore.io/api/VisualStudioCode,node

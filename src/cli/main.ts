@@ -6,20 +6,20 @@ import _ from "lodash";
 import yaml from "js-yaml";
 import amazer, { Config } from "../amazer";
 import { areaToString, Dict, capitalize } from "../util";
-import { GeneratorWithConfig, parseGenerator } from "../generator/base";
-import { RecursiveBacktracker } from "../generator/simple";
-import { parseModifier, ModifierWithConfig } from "../modifier/base";
+import { GeneratorWithConfig } from "../generator/base";
+import { ModifierWithConfig } from "../modifier/base";
 import { Size } from "../domain/common";
 import { Area } from "../domain/area";
-import { AreaWritableFormat, areaToFile, writeStructuredFile } from "./files";
+import { AreaWritableFormat, areaToFile, writeStructuredFile, areaFromFile } from "./files";
+import { cliOptions, displayOptions, interactiveOptions } from "./options";
 
 
 // TODO Add logging
 // TODO Cleanup the config mess
-// TODO Separate library from CLI?
 
 const version = "0.1.0"
 
+// TODO Move to options.ts
 export interface Arguments {
     config?: string,
     size?: Size,
@@ -34,121 +34,58 @@ export interface Arguments {
     [name: string]: any
 }
 
-function parseModifiers(modifierArgs: string[]): ModifierWithConfig<any>[] {
-    return modifierArgs.map(arg => parseModifier(arg));
-}
-
 const cli = yargs
     .version(version)
     .showHelpOnFail(true)
-    .usage("Usage: $0 [-c | -s | -w -h] [OPTIONS] [<FILE>]")
-    .options({
-        c: {
-            alias: "config",
-            type: "string",
-            describe: "The configuration file",
-            requiresArg: true
-        },
-        s: {
-            alias: "size",
-            type: "string",
-            coerce: Size.fromString,
-            describe: "The areas size as WIDTHxHEIGHT",
-            conflicts: ["width", "height"],
-            requiresArg: true
-        },
-        w: {
-            alias: "width",
-            type: "number",
-            describe: "The areas width",
-            implies: "h",
-            conflicts: ["size"],
-            requiresArg: true
-        },
-        h: {
-            alias: "height",
-            type: "number",
-            describe: "The areas height",
-            implies: "w",
-            conflicts: ["size"],
-            requiresArg: true
-        },
-        g: {
-            alias: "generator",
-            type: "string",
-            coerce: parseGenerator,
-            describe: `The area generator to use, defaults to ${capitalize(RecursiveBacktracker.name)}`,
-            requiresArg: true
-        },
-        m: {
-            alias: "modifier",
-            type: "array",
-            coerce: parseModifiers,
-            describe: "The modifiers to apply after the generation",
-            requiresArg: true
-        },
-        silent: {
-            type: "boolean",
-            describe: "Don't print the generated area"
-        },
-        f: {
-            alias: "format",
-            choices: ["binary", "base64", "plain"],
-            describe: "The format of the output file, defaults to binary",
-            requiresArg: true
-        },
-        saveConfig: {
-            type: "string",
-            describe: "File type or filename to store the used configuration in",
-        },
-        i: {
-            alias: "interactive",
-            type: "string",
-            describe: "Start an interactive session in the given or current folder"
-        }
-    });
+    .command(["generate [file]", "$0"], "Generate areas", cliOptions, main)
+    .usage("Usage: $0 [-c FILE|-s WIDTHxHEIGHT] [OPTIONS] [FILE]")
+    .command("interactive [directory]", "Start an interactive session", interactiveOptions, interactive)
+    .usage("       $0 interactive [OPTIONS] [DIRECTORY]")
+    .command("display <file>", "Read file and print area to console", displayOptions, display)
+    .usage("       $0 display [OPTIONS] <FILE>");
+
+// TODO Add commands
+const interactiveCommands = yargs
+    .version(version)
+    .showHelpOnFail(false)
+    .options(interactiveOptions);
+
+// This executes the parsing of process.argv
+cli.argv;
 
 
-// TODO Where to place this?
-const interactiveCommands = ["save", "s", "save-config", "sc", "exit", "quit", "q", "next", "n", "help", "h", "show-config", "c"];
-
-try {
-    if (process.argv.length <= 2) {
-        throw new Error("No arguments where given");
-    } else {
-        let args: Arguments = cli.argv;
-        if (args.interactive !== undefined) {
-            interactive(args);
-        } else {
-            let config = Config.fromArgs(args);
-            const area = amazer(config).generate();
-            if (!args.silent) {
-                console.log(areaToString(area));
-            }
-            const outputPath = args._[0];
-            if (outputPath !== undefined) {
-                areaToFile(area, outputPath, args.format);
-            }
-            const configOutputPath = getConfigOutputPath(args);
-            if (configOutputPath !== undefined) {
-                writeStructuredFile(configOutputPath, prepareAmazerConfig(config));
-            }
-        }
+function main(argv: Arguments) {
+    let config = Config.fromArgs(argv);
+    const area = amazer(config).generate();
+    if (!argv.silent) {
+        console.log(areaToString(area));
     }
-} catch (e) {
-    console.log(e.message + "\n");
-    cli.showHelp();
-    process.exit(1);
+    if (argv.file !== undefined) {
+        areaToFile(area, argv.file, argv.format);
+    }
+    const configOutputPath = getConfigOutputPath(argv);
+    if (configOutputPath !== undefined) {
+        writeStructuredFile(configOutputPath, prepareAmazerConfig(config));
+    }
 }
 
-// TODO Use different yargs instance for interactive commands
+
+function display(argv: any) {
+    const area: Area = areaFromFile(argv.file, argv.format);
+    console.log(areaToString(area));
+}
+
+
 // TODO Enable history usable with arrows
 // TODO Add revert command
-function interactive(args: Arguments) {
-    const targetDirectory = args.interactive!.length <= 0 ? "." : args.interactive!;
+function interactive(argv: any) {
+    // TODO Transform to commands of interactiveYargs
+    const interactiveCmds = ["save", "s", "save-config", "sc", "exit", "quit", "q", "next", "n", "help", "h", "show-config", "c"];
+    const targetDirectory = argv.directory === undefined || argv.directory.length <= 0 ? "." : argv.directory;
 
     let exit = false;
     let generateArea = true;
+    let args: Arguments = argv;
     let config: Config | undefined = undefined;
     let area: Area | undefined = undefined;
     do {
@@ -167,13 +104,13 @@ function interactive(args: Arguments) {
 
         try {
             const commands = readlineSync.prompt().split(/\s+/);
-            if (interactiveCommands.includes(commands[0])) {
+            if (interactiveCmds.includes(commands[0])) {
                 switch (commands[0]) {
                     case "s":
                     case "save":
                         if (area !== undefined) {
                             const areaPath = determinePath(targetDirectory, commands[1]);
-                            areaToFile(area, areaPath, args.format);
+                            areaToFile(area, areaPath, argv.format);
                         } else {
                             console.log("No area could be generated due to previous error. Saving not possible.");
                         }
@@ -216,7 +153,7 @@ function interactive(args: Arguments) {
                         break;
                 }
             } else {
-                let otherArgs = cli.parse(commands);
+                let otherArgs = interactiveCommands.parse(commands);
                 args = {...args, ...otherArgs};
                 generateArea = true;
             }

@@ -9,6 +9,7 @@ import { areaToString } from "../util";
 export type AreaReadableFormat = "binary" | "base64";
 export type AreaWritableFormat = AreaReadableFormat | "plain";
 
+// TODO Use first line as marker for the format?
 export function areaToFile(area: Area, path: string, format: AreaWritableFormat | undefined = "binary") {
     if (format === undefined) {
         format = "binary";
