@@ -4,14 +4,14 @@ import yargs from "yargs";
 import readlineSync from "readline-sync";
 import _ from "lodash";
 import yaml from "js-yaml";
-import { Config, amazer } from "./lib";
-import { areaToString, Dict, writeStructuredFile, capitalize } from "./util";
-import { GeneratorWithConfig, parseGenerator } from "./generator/base";
-import { RecursiveBacktracker } from "./generator/simple";
-import { parseModifier, ModifierWithConfig } from "./modifier/base";
-import { Size } from "./domain/common";
-import serialize from "./serialize";
-import { Area } from "./domain/area";
+import { Config, amazer } from "../lib";
+import { areaToString, Dict, writeStructuredFile, capitalize } from "../util";
+import { GeneratorWithConfig, parseGenerator } from "../generator/base";
+import { RecursiveBacktracker } from "../generator/simple";
+import { parseModifier, ModifierWithConfig } from "../modifier/base";
+import { Size } from "../domain/common";
+import serialize from "../serialize";
+import { Area } from "../domain/area";
 
 
 // TODO Add logging

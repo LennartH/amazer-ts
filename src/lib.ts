@@ -1,4 +1,4 @@
-import { Arguments } from "./main";
+import { Arguments } from "./cli/main";
 import { Area } from "./domain/area";
 import { Size } from "./domain/common";
 import { GeneratorWithConfig, GeneratorConfig, parseGenerator } from "./generator/base";
