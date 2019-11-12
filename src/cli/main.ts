@@ -6,33 +6,16 @@ import _ from "lodash";
 import yaml from "js-yaml";
 import amazer, { Config } from "../amazer";
 import { areaToString, Dict, capitalize } from "../util";
-import { GeneratorWithConfig } from "../generator/base";
-import { ModifierWithConfig } from "../modifier/base";
 import { Size } from "../domain/common";
 import { Area } from "../domain/area";
-import { AreaWritableFormat, areaToFile, writeStructuredFile, areaFromFile } from "./files";
-import { cliOptions, displayOptions, interactiveOptions } from "./options";
+import { areaToFile, writeStructuredFile, areaFromFile } from "./files";
+import { cliOptions, displayOptions, interactiveOptions, CliArgs, DisplayArgs, InteractiveArgs } from "./options";
 
 
 // TODO Add logging
 // TODO Cleanup the config mess
 
 const version = "0.1.0"
-
-// TODO Move to options.ts
-export interface Arguments {
-    config?: string,
-    size?: Size,
-    width?: number,
-    height?: number,
-    generator?: GeneratorWithConfig<any>,
-    modifier?: ModifierWithConfig<any>[],
-    silent?: boolean,
-    format?: AreaWritableFormat,
-    saveConfig?: string,
-    interactive?: string,
-    [name: string]: any
-}
 
 const cli = yargs
     .version(version)
@@ -41,7 +24,7 @@ const cli = yargs
     .usage("Usage: $0 [-c FILE|-s WIDTHxHEIGHT] [OPTIONS] [FILE]")
     .command("interactive [directory]", "Start an interactive session", interactiveOptions, interactive)
     .usage("       $0 interactive [OPTIONS] [DIRECTORY]")
-    .command("display <file>", "Read file and print area to console", displayOptions, display)
+    .command("display <file>", "Read file and print area to console", displayOptions, (argv) => display(argv as any as DisplayArgs))
     .usage("       $0 display [OPTIONS] <FILE>");
 
 // TODO Add commands
@@ -54,8 +37,8 @@ const interactiveCommands = yargs
 cli.argv;
 
 
-function main(argv: Arguments) {
-    let config = Config.fromArgs(argv);
+function main(argv: CliArgs) {
+    let config = Config.fromObject(argv);
     const area = amazer(config).generate();
     if (!argv.silent) {
         console.log(areaToString(area));
@@ -70,7 +53,7 @@ function main(argv: Arguments) {
 }
 
 
-function display(argv: any) {
+function display(argv: DisplayArgs) {
     const area: Area = areaFromFile(argv.file, argv.format);
     console.log(areaToString(area));
 }
@@ -78,20 +61,20 @@ function display(argv: any) {
 
 // TODO Enable history usable with arrows
 // TODO Add revert command
-function interactive(argv: any) {
+function interactive(argv: InteractiveArgs) {
     // TODO Transform to commands of interactiveYargs
     const interactiveCmds = ["save", "s", "save-config", "sc", "exit", "quit", "q", "next", "n", "help", "h", "show-config", "c"];
     const targetDirectory = argv.directory === undefined || argv.directory.length <= 0 ? "." : argv.directory;
 
     let exit = false;
     let generateArea = true;
-    let args: Arguments = argv;
+    let args: InteractiveArgs = argv;
     let config: Config | undefined = undefined;
     let area: Area | undefined = undefined;
     do {
         if (generateArea) {
             try {
-                config = Config.fromArgs(args);
+                config = Config.fromObject(args);
                 area = amazer(config).generate();
                 console.log(areaToString(area));
             } catch(error) {
@@ -179,12 +162,12 @@ function determinePath(directory: string, name?: string | undefined, fallbackNam
     return p;
 }
 
-function getConfigOutputPath(args: Arguments): string | undefined {
+function getConfigOutputPath(args: CliArgs): string | undefined {
     if (args.saveConfig === undefined) {
         return undefined;
     }
     const dotIndex = args.saveConfig.indexOf(".");
-    if (dotIndex <= 0 && args._.length === 0) {
+    if (dotIndex <= 0 && args.file === undefined) {
         return undefined;
     }
     if (dotIndex > 0) {
@@ -193,7 +176,7 @@ function getConfigOutputPath(args: Arguments): string | undefined {
 
     const saveConfig = args.saveConfig.length == 0 ? "yml" : args.saveConfig.substr(dotIndex + 1);
     if (saveConfig === "yml" || saveConfig === "yaml" || saveConfig === "json") {
-        const outputPath: string = args._[0];
+        const outputPath: string = args.file!;
         const filename = outputPath.substr(0, outputPath.length - outputPath.lastIndexOf(".") + 1);
         return `${filename}.${saveConfig}`
     } else {

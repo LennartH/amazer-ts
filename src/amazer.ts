@@ -1,10 +1,10 @@
-import { Arguments } from "./cli/main";
 import { Area } from "./domain/area";
 import { Size } from "./domain/common";
 import { GeneratorWithConfig, GeneratorConfig, parseGenerator } from "./generator/base";
 import { ModifierWithConfig, parseModifier } from "./modifier/base";
 import { RecursiveBacktracker } from "./generator/simple";
 import { readStructuredFile } from "./cli/files";
+import { Dict } from "./util";
 
 export class Config {
 
@@ -30,7 +30,7 @@ export class Config {
         return this._modifiers;
     }
 
-    static fromArgs(args: Arguments): Config {
+    static fromObject(args: Dict<any>): Config {
         if (args.config !== undefined) {
             const config = Config.fromFile(args.config);
             try {
@@ -59,7 +59,7 @@ export class Config {
     // TODO Move to cli/files
     static fromFile(path: string): Config {
         const fileContent = readStructuredFile(path);
-        const args: Arguments = {};
+        const args: Dict<any> = {};
         args.size = this.sizeFromArgs(fileContent);
         if (fileContent.generator !== undefined) {
             args.generator = parseGenerator(fileContent.generator);
@@ -70,7 +70,7 @@ export class Config {
                 args.modifier.push(parseModifier(modifier));
             }
         }
-        return Config.fromArgs(args);
+        return Config.fromObject(args);
     }
     
     private static sizeFromArgs(args: any): Size {
