@@ -4,7 +4,7 @@ import yargs from "yargs";
 import readlineSync from "readline-sync";
 import _ from "lodash";
 import yaml from "js-yaml";
-import { Config, amazer } from "../lib";
+import { Config, amazer } from "../amazer";
 import { areaToString, Dict, writeStructuredFile, capitalize } from "../util";
 import { GeneratorWithConfig, parseGenerator } from "../generator/base";
 import { RecursiveBacktracker } from "../generator/simple";
