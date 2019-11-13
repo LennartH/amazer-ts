@@ -7,16 +7,6 @@ import { parseModifier, ModifierWithConfig } from "../modifier/base";
 import { AreaWritableFormat, AreaReadableFormat } from "./files";
 
 
-const sizeOption: Dict<Options> = {
-    s: {
-        alias: "size",
-        type: "string",
-        coerce: Size.fromString,
-        describe: "The areas size as WIDTHxHEIGHT",
-        requiresArg: true
-    },
-}
-
 interface ArgsBase extends Dict<any> {
     config?: string,
     size?: Size,
@@ -33,7 +23,13 @@ function sharedOptions(): Dict<Options> {
             describe: "The configuration file",
             requiresArg: true
         },
-        ...cloneOption(sizeOption),
+        s: {
+            alias: "size",
+            type: "string",
+            coerce: Size.fromString,
+            describe: "The areas size as WIDTHxHEIGHT",
+            requiresArg: true
+        },
         g: {
             alias: "generator",
             type: "string",
@@ -55,16 +51,6 @@ function sharedOptions(): Dict<Options> {
             requiresArg: true
         },
     }
-}
-
-function cloneOption(option: Dict<Options>): Dict<any> {
-    const keys: string[] = Object.keys(option);
-    if (keys.length != 1) {
-        throw new Error(`Object must have exactly 1 entry but has ${keys.length}`)
-    }
-    const name: string = keys[0];
-    const options: Options = option[name];
-    return {[name]: {...options}}
 }
 
 function parseModifiers(modifierArgs: string[]): ModifierWithConfig<any>[] {
