@@ -70,6 +70,7 @@ export const cliOptions: Dict<Options> = {
         type: "boolean",
         describe: "Don't print the generated area"
     },
+    // TODO Option to save defaults
     saveConfig: {
         type: "string",
         describe: "File type or filename to store the used configuration in",

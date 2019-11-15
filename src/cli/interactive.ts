@@ -1,39 +1,117 @@
-import yargs from "yargs";
 import readlineSync from "readline-sync";
 import yaml from "js-yaml";
 import path from "path";
 import fs from "fs";
-import { version } from "./main";
-import { interactiveOptions, InteractiveArgs } from "./options";
+import { InteractiveArgs } from "./options";
 import amazer, { Config } from "../amazer";
 import { Area } from "../domain/area";
-import { areaToString } from "../util";
-import { areaToFile, writeStructuredFile } from "./files";
+import { areaToString, Dict } from "../util";
+import { areaToFile, writeStructuredFile, AreaWritableFormat } from "./files";
 import { prepareAmazerConfig } from "./util";
+import { cli } from "./main";
 
 
-// TODO Add commands
-const interactiveCommands = yargs
-    .version(version)
-    .showHelpOnFail(false)
-    .options(interactiveOptions);
+class Command {
+    constructor(
+        readonly aliases: string[],
+        readonly description: string,
+        readonly handler: (args: string[]) => void
+    ) { }
+}
 
-    // TODO Enable history usable with arrows
-    // TODO Add revert command
-export function interactiveLoop(argv: InteractiveArgs) {
-    // TODO Transform to commands of interactiveYargs
-    const interactiveCmds = ["save", "s", "save-config", "sc", "exit", "quit", "q", "next", "n", "help", "h", "show-config", "c"];
-    const targetDirectory = argv.directory === undefined || argv.directory.length <= 0 ? "." : argv.directory;
 
-    let exit = false;
-    let generateArea = true;
-    let args: InteractiveArgs = argv;
-    let config: Config | undefined = undefined;
-    let area: Area | undefined = undefined;
-    do {
+// TODO Enable history usable with arrows
+let targetDirectory: string;
+let outputFormat: AreaWritableFormat | undefined;
+let exit: boolean;
+let generateArea: boolean;
+let configArgs: Dict<any>;
+let config: Config | undefined;
+let area: Area | undefined;
+let helpString: string = "This should be helpful"  // TODO Compile help string
+
+
+const defaultCommand: Command = new Command(["set"], "Set generation options", args => {
+    console.log(args)
+    cli.parse(args, (err: Error, argv: InteractiveArgs, output: string) => {
+        configArgs = {...configArgs, ...argv};
+        if (argv.format !== undefined) {
+            outputFormat = argv.format;
+        }
+        if (output) {
+            console.log(output);
+        }
+        if (err) {
+            console.log(helpString);
+        }
+    });
+    generateArea = true;
+})
+// TODO Add revert command
+const commands: Command[] = [
+    new Command(["save", "s"], "Save the current area", args => {
+        if (area !== undefined) {
+            const file = args[0]
+            const areaPath = determinePath(targetDirectory, file);
+            areaToFile(area, areaPath, outputFormat);
+        } else {
+            console.log("No area could be generated due to previous error. Saving not possible.");
+        }
+        generateArea = true;
+    }),
+    new Command(["show-config", "c"], "Show the current configuration", _ => {
+        if (config !== undefined) {
+            // TODO Option to show defaults
+            const configDict = prepareAmazerConfig(config);
+            console.log(yaml.dump(configDict));
+        } else {
+            console.log("No config could be created due to previous error. Showing not possible.");
+        }
+    }),
+    new Command(["save-config", "sc"], "Save the current configuration", args => {
+        if (config !== undefined) {
+            const file = args[0];
+            const configPath = determinePath(targetDirectory, file, "area-config", "yml");
+            writeStructuredFile(configPath, prepareAmazerConfig(config));
+        } else {
+            console.log("No config could be created due to previous error. Saving not possible.");
+        }
+    }),
+    new Command(["exit", "quit", "q"], "Quit the application", _ => exit = true),
+    new Command(["next", "n"], "Generate and display the next area", _ => generateArea = true),
+    new Command(["help", "h"], "Show the help text", _ => console.log(helpString)),
+    defaultCommand
+]
+
+export function interactiveLoop(args: InteractiveArgs) {
+    targetDirectory = ".";
+    if (args.directory !== undefined && args.directory.length > 0) {
+        targetDirectory = args.directory;
+    }
+    outputFormat = args.format;
+
+    exit = false;
+    generateArea = true;
+    configArgs = args;
+    config = undefined;
+    area = undefined;
+    readlineSync.promptLoop(input => {
+        const args = input.split(/\s+/)
+        let commandToExecute = defaultCommand;
+        let commandArgs = args;
+        for (let command of commands) {
+            if (command.aliases.includes(args[0])) {
+                commandToExecute = command;
+                commandArgs = args.slice(1);
+                break;
+            }
+        }
+        generateArea = false;
+        commandToExecute.handler(commandArgs);
+
         if (generateArea) {
             try {
-                config = Config.fromObject(args);
+                config = Config.fromObject(configArgs);
                 area = amazer(config).generate();
                 console.log(areaToString(area));
             } catch(error) {
@@ -42,69 +120,9 @@ export function interactiveLoop(argv: InteractiveArgs) {
                 area = undefined;
             }
         }
-        generateArea = false;
-
-        try {
-            const commands = readlineSync.prompt().split(/\s+/);
-            if (interactiveCmds.includes(commands[0])) {
-                switch (commands[0]) {
-                    case "s":
-                    case "save":
-                        if (area !== undefined) {
-                            const areaPath = determinePath(targetDirectory, commands[1]);
-                            areaToFile(area, areaPath, argv.format);
-                        } else {
-                            console.log("No area could be generated due to previous error. Saving not possible.");
-                        }
-                        generateArea = true;
-                        break;
-                    case "sc":
-                    case "save-config":
-                        if (config !== undefined) {
-                            const configPath = determinePath(targetDirectory, commands[1], "area-config", "yml");
-                            writeStructuredFile(configPath, prepareAmazerConfig(config));
-                        } else {
-                            console.log("No config could be created due to previous error. Saving not possible.");
-                        }
-                        break;
-                    case "c":
-                    case "show-config":
-                        if (config !== undefined) {
-                            const configDict = prepareAmazerConfig(config);
-                            console.log(yaml.dump(configDict));
-                        } else {
-                            console.log("No config could be created due to previous error. Showing not possible.");
-                        }
-                        break
-                    case "q":
-                    case "quit":
-                    case "exit":
-                        exit = true;
-                        break;
-                    case "n":
-                    case "next":
-                        generateArea = true;
-                        break;
-                    case "h":
-                    case "help":
-                        // TODO Implement help text
-                        console.log("This should be helpful")
-                        break;
-                    default:
-                        console.log(`Error: The command ${commands[0]} has not yet been implemented`)
-                        break;
-                }
-            } else {
-                let otherArgs = interactiveCommands.parse(commands);
-                args = {...args, ...otherArgs};
-                generateArea = true;
-            }
-        } catch(error) {
-            console.log(`Error: ${error.message}`)
-        }
-    } while (!exit);
+        return exit;
+    });
 }
-
 
 function determinePath(directory: string, name?: string | undefined, fallbackName="area", fallbackType="mz"): string {
     if (name) {

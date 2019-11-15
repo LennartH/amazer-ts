@@ -14,15 +14,15 @@ import { prepareAmazerConfig } from "./util";
 
 export const version = "0.1.0"
 
-const cli = yargs
+export const cli = yargs
     .version(version)
     .showHelpOnFail(true)
-    .command(["generate [file]", "$0"], "Generate areas", cliOptions, main)
     .usage("Usage: $0 [-c FILE|-s WIDTHxHEIGHT] [OPTIONS] [FILE]")
-    .command("interactive [directory]", "Start an interactive session", interactiveOptions, interactiveLoop)
     .usage("       $0 interactive [OPTIONS] [DIRECTORY]")
-    .command("display <file>", "Read file and print area to console", displayOptions, (argv) => display(argv as any as DisplayArgs))
-    .usage("       $0 display [OPTIONS] <FILE>");
+    .usage("       $0 display [OPTIONS] <FILE>")
+    .command(["generate [file]", "$0"], "Generate areas", cliOptions, main)
+    .command("interactive [directory]", "Start an interactive session", interactiveOptions, interactiveLoop)
+    .command("display <file>", "Read file and print area to console", displayOptions, (argv) => display(argv as any as DisplayArgs));
 
 // This executes the parsing of process.argv
 cli.argv;
