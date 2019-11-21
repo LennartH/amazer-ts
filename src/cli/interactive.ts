@@ -32,7 +32,6 @@ let helpString: string = "This should be helpful"  // TODO Compile help string
 
 
 const defaultCommand: Command = new Command(["set"], "Set generation options", args => {
-    console.log(args)
     cli.parse(args, (err: Error, argv: InteractiveArgs, output: string) => {
         configArgs = {...configArgs, ...argv};
         if (argv.format !== undefined) {

@@ -9,6 +9,7 @@ import { interactiveLoop } from "./interactive";
 import { prepareAmazerConfig } from "./util";
 
 
+// TODO Migrate from yargs to vorpal
 // TODO Add logging
 // TODO Cleanup the config mess
 

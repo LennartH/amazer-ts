@@ -46,7 +46,7 @@ function sharedOptions(): Dict<Options> {
         },
         f: {
             alias: "format",
-            choices: ["binary", "base64", "plain"],  // FIXME This is 'interpreted' twice
+            choices: ["binary", "base64", "plain"],
             describe: "The format of the output file, defaults to binary",
             requiresArg: true
         },
