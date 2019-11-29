@@ -2,7 +2,8 @@
   "name": "@dq/amazer",
   "version": "0.1.0",
   "description": "A simple CLI to create mazes",
-  "main": "./dist/amazer.js",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "bin": {
     "amazer": "./dist/cli/main.js"
   },
