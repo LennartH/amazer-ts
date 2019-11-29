@@ -1,15 +1,17 @@
 {
-  "name": "amazer",
+  "name": "@dq/amazer",
   "version": "0.1.0",
   "description": "A simple CLI to create mazes",
-  "main": "./dist/main.js",
   "bin": {
     "amazer": "./dist/cli/main.js"
   },
+  "files": [
+    "dist/"
+  ],
   "scripts": {
     "start": "ts-node src/cli/main.ts",
-    "create": "npm run build && npm run test",
     "build": "tsc --sourceMap false -p .",
+    "prepare": " npm test && npm run build",
     "test": "jest"
   },
   "repository": {

@@ -6,6 +6,7 @@
     "outDir": "./dist",
     "rootDir": "./src",
     "sourceMap": true,
+    "declaration": true,
 
     /* Strict Type-Checking Options */
     "strict": true,
@@ -26,6 +27,7 @@
   },
   "exclude": [
     "test",
+    "dist",
     "node_modules"
   ]
 }
