@@ -15,6 +15,14 @@ export interface ModifierWithConfig<C extends ModifierConfig> {
 const _modifiers: Dict<AreaModifier<any>> = {};
 const _configFields: Dict<Field[]> = {};
 
+export function modifiers(): Array<[AreaModifier<any>, Field[] | undefined]> {
+    let result: Array<[AreaModifier<any>, Field[] | undefined]> = [];
+    for (let name in _modifiers) {
+        result.push([_modifiers[name], _configFields[name]]);
+    }
+    return result;
+}
+
 export function registerModifier(modifier: AreaModifier<any>, configFields?: Field[] | undefined) {
     const modifierName = modifier.name;
     _modifiers[modifierName] = modifier;

@@ -20,6 +20,14 @@ export interface GeneratorWithConfig<C extends GeneratorConfig> {
 const _generators: Dict<AreaGenerator<any>> = {};
 const _configFields: Dict<Field[]> = {};
 
+export function generators(): Array<[AreaGenerator<any>, Field[] | undefined]> {
+    let result: Array<[AreaGenerator<any>, Field[] | undefined]> = [];
+    for (let name in _generators) {
+        result.push([_generators[name], _configFields[name]]);
+    }
+    return result;
+}
+
 export function registerGenerator(generator: AreaGenerator<any>, configFields?: Field[] | undefined) {
     const generatorName = generator.name;
     _generators[generatorName] = generator;
