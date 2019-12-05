@@ -1,6 +1,6 @@
 import _ from "lodash";
 
-import { ModifierConfig, AreaModifier } from "./base";
+import { ModifierConfig, AreaModifier, registerModifier } from "./base";
 import { Area, Tile } from "../domain/area";
 import { Vector, Direction } from "../domain/common";
 import { findPath } from "../solver";
@@ -18,6 +18,7 @@ export const BreakPassagesConfigFields: Field[] = [
 ]
 
 export const BreakPassages: AreaModifier<BreakPassagesConfig> = breakPassages;
+registerModifier(BreakPassages, BreakPassagesConfigFields);
 
 function breakPassages(area: Area, config: BreakPassagesConfig): Area {
     let amount: number = config.amount || (area.width + area.height) / 2;

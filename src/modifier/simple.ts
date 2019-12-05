@@ -1,8 +1,9 @@
-import { AreaModifier, ModifierConfig } from "./base";
+import { AreaModifier, ModifierConfig, registerModifier } from "./base";
 import { Area, Tile } from "../domain/area";
 import { Direction, Vector } from "../domain/common";
 
 export const Emmure: AreaModifier<ModifierConfig> = emmure;
+registerModifier(Emmure);
 
 function emmure(area: Area, _: ModifierConfig): Area {
     let borders: {[direction: string]: [Vector, Direction]} = {

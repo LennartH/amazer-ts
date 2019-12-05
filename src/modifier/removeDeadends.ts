@@ -1,6 +1,6 @@
 import _ from "lodash";
 
-import { AreaModifier, ModifierConfig } from "./base";
+import { AreaModifier, ModifierConfig, registerModifier } from "./base";
 import { Area, Tile } from "../domain/area";
 import { Vector, Direction } from "../domain/common";
 import { Field, parseNumber } from "../util";
@@ -17,6 +17,7 @@ export const RemoveDeadendsConfigFields: Field[] = [
 const DeadendTile = Tile.impassable("Deadend");
 
 export const RemoveDeadends: AreaModifier<RemoveDeadendsConfig> = removeDeadends;
+registerModifier(RemoveDeadends, RemoveDeadendsConfigFields);
 
 function removeDeadends(area: Area, config: RemoveDeadendsConfig): Area {
     const collectedDeadends: Vector[] = [];
