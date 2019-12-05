@@ -1,6 +1,0 @@
-size: 50x50
-generator: Nystrom
-modifiers:
-  - Emmure
-  - BreakPassages
-  - RemoveDeadends
