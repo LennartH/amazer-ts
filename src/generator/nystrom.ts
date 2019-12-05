@@ -1,6 +1,6 @@
 import _ from "lodash";
 
-import { AreaGenerator, GeneratorConfig } from "./base";
+import { AreaGenerator, GeneratorConfig, registerGenerator } from "./base";
 import { Area, Tile, floodFill } from "../domain/area";
 import { Size, Vector, Rectangle, Direction } from "../domain/common";
 import { recursiveBacktrack } from "./simple";
@@ -20,6 +20,7 @@ export const NystromConfigFields: Field[] = [
 ]
 
 export const Nystrom: AreaGenerator<NystromConfig> = nystrom;
+registerGenerator(Nystrom, NystromConfigFields)
 
 function nystrom(c: NystromConfig): Area {
     let config = new _NystromConfig(c);

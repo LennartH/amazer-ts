@@ -1,10 +1,11 @@
 import _ from "lodash";
 import { Area, Tile } from "../domain/area";
-import { AreaGenerator, GeneratorConfig, VisitedTile } from "./base";
+import { AreaGenerator, GeneratorConfig, VisitedTile, registerGenerator } from "./base";
 import { Direction, Vector } from "../domain/common";
 
 
 export const RecursiveBacktracker: AreaGenerator<GeneratorConfig> = recursiveBacktracker;
+registerGenerator(RecursiveBacktracker);
 
 function recursiveBacktracker(config: GeneratorConfig): Area {
     const area = new Area(config.size, Tile.Wall);
@@ -34,6 +35,7 @@ export function recursiveBacktrack(area: Area, start: Vector) {
 
 
 export const RandomizedKruskal: AreaGenerator<GeneratorConfig> = randomizedKruskal;
+registerGenerator(RandomizedKruskal);
 
 function randomizedKruskal(config: GeneratorConfig): Area {
     const area = new Area(config.size);
@@ -85,6 +87,7 @@ function randomizedKruskal(config: GeneratorConfig): Area {
 
 
 export const RandomizedPrim: AreaGenerator<GeneratorConfig> = randomizedPrim;
+registerGenerator(RandomizedPrim);
 
 function randomizedPrim(config: GeneratorConfig): Area {
     const area = new Area(config.size, Tile.Wall);
@@ -128,6 +131,7 @@ function randomizedPrim(config: GeneratorConfig): Area {
 
 
 export const RandomArea: AreaGenerator<GeneratorConfig> = random;
+registerGenerator(RandomArea);
 
 function random(config: GeneratorConfig): Area {
     const area = new Area(config.size);

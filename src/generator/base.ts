@@ -1,9 +1,7 @@
+import _ from "lodash";
 import { Area } from "../domain/area";
 import { Vector, Direction, Size } from "../domain/common";
-import { RecursiveBacktracker, RandomArea, RandomizedKruskal, RandomizedPrim } from "./simple";
-import _ from "lodash";
-import { Nystrom, NystromConfigFields } from "./nystrom";
-import { Field, configFrom, decapitalize } from "../util";
+import { Field, configFrom, decapitalize, Dict } from "../util";
 
 
 export interface GeneratorConfig {
@@ -19,13 +17,16 @@ export interface GeneratorWithConfig<C extends GeneratorConfig> {
     readonly config?: C;
 }
 
-// TODO Reverse dependencies: User register function instead of static list
-const generators: AreaGenerator<any>[] = [
-    RecursiveBacktracker, RandomizedKruskal, RandomizedPrim, RandomArea, Nystrom
-];
+const _generators: Dict<AreaGenerator<any>> = {};
+const _configFields: Dict<Field[]> = {};
 
-const generatorConfigFields: Map<AreaGenerator<any>, Field[]> = new Map();
-generatorConfigFields.set(Nystrom, NystromConfigFields);
+export function registerGenerator(generator: AreaGenerator<any>, configFields?: Field[] | undefined) {
+    const generatorName = generator.name;
+    _generators[generatorName] = generator;
+    if (configFields !== undefined) {
+        _configFields[generatorName] = configFields;
+    }
+}
 
 export function parseGenerator<C extends GeneratorConfig>(arg: any): GeneratorWithConfig<C> {
     let generatorName: string;
@@ -39,21 +40,21 @@ export function parseGenerator<C extends GeneratorConfig>(arg: any): GeneratorWi
         configData = arg[generatorName];
     }
 
-    const gen = generator<C>(generatorName);
+    const _generator = generator<C>(generatorName);
     let config: any = undefined;
-    if (configData !== undefined && generatorConfigFields.has(gen)) {
+    if (configData !== undefined && _configFields.hasOwnProperty(generatorName)) {
         try {
-            config = configFrom(configData, generatorConfigFields.get(gen)!);
+            config = configFrom(configData, _configFields[generatorName]);
         } catch (error) {
-            throw new Error(`Error parsing generator ${gen.name}: ${error.message}`);
+            throw new Error(`Error parsing generator ${_generator.name}: ${error.message}`);
         }
     }
-    return {generator: gen, config: config};
+    return {generator: _generator, config: config};
 }
 
 export function generator<C extends GeneratorConfig>(name: string): AreaGenerator<C> {
     let cleanedName = decapitalize(name);
-    const generator = generators.find(g => g.name == cleanedName);
+    const generator = _generators[cleanedName];
     if (generator === undefined) {
         throw new Error(`No generator with name ${name} could be found`);
     }
