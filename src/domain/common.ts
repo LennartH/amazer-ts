@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { parseNumber } from "../util";
+import { parseNumber, Dict } from "../util";
 
 export interface Size {
     width: number;
@@ -9,6 +9,20 @@ export interface Size {
 export namespace Size {
     export function stringify(size: Size): string {
         return `${size.width}x${size.height}`;
+    }
+
+    export function fromObject(data: Dict<any>): Size {
+        if (data.size !== undefined) {
+            if (typeof data.size === "string") {
+                return Size.fromString(data.size);
+            } else {
+                return data.size;
+            }
+        } else if (data.width !== undefined && data.height !== undefined) {
+            return {width: data.width, height: data.height};
+        } else {
+            throw new Error("No size information could be found");
+        }
     }
 
     export function fromString(value: string): Size {
@@ -24,6 +38,7 @@ export namespace Size {
     }
 }
 
+// TODO Unify Point and Vector
 export interface Point {
     x: number;
     y: number;

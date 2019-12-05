@@ -1,3 +1,7 @@
+import amazer from "./amazer";
+
+export default amazer;
+
 export * from "./domain/common";
 export * from "./domain/area";
 
