@@ -27,6 +27,7 @@
   },
   "typedocOptions": {
     "mode": "modules",
+    "excludePrivate": true,
     "out": "docs"
   },
   "exclude": [
