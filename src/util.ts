@@ -32,10 +32,12 @@ export interface Dict<T> {
  * The data can also be a {@link Dict Dict<string>}, where the keys are the field names and the values are the field
  * values to be parsed.
  * 
- * @param data The data to generate the object from
- * @param fields The fields to retrieve and parse the date entries
+ * @param data The data to parse the object from
+ * @param fields The fields to retrieve and parse the data entries
  * 
- * @throws An error if data is a string and positional arguments are used after keyword arguments.
+ * @throws An error, if data is a string and positional arguments are used after keyword arguments.
+ * @throws An error, if data is a string and an unknown field name is given.
+ * @throws An error, if a field value can not be parsed.
  */
 // TODO Write tests
 export function configFrom<C>(data: string | Dict<string>, fields: Field[]): C {
@@ -46,6 +48,22 @@ export function configFrom<C>(data: string | Dict<string>, fields: Field[]): C {
     }
 }
 
+/**
+ * Create an object from the given string for the given {@link Field fields}.
+ * 
+ * Must be of the form `"value1, value2, field1=value3, field2=value4"`. The field separator, value separator and
+ * ignore symbol can be provided. The values are mapped to the fields by position or by name, if provided.
+ * 
+ * @param args The string to parse the object from
+ * @param fields The fields to retrieve and parse the values
+ * @param fieldsSeparator The symbol to split fields by
+ * @param valueSeparator The symbol to split field names and values by
+ * @param ignoreField The symbol to ignore positional arguments
+ * 
+ * @throws An error, if positional arguments are used after keyword arguments.
+ * @throws An error, if an unknown field name is given.
+ * @throws An error, if a field value can not be parsed.
+ */
 export function configFromArgs<C>(args: string, fields: Field[], fieldsSeparator=",", valueSeparator="=", ignoreField="_"): C {
     const fieldsByName: Dict<Field> = {};
     fields.forEach(f => fieldsByName[f.name] = f);
@@ -63,9 +81,12 @@ export function configFromArgs<C>(args: string, fields: Field[], fieldsSeparator
         let field: Field;
         let value: string;
         if (isKwarg) {
-            // FIXME handle unknown field names
             const fieldArgSplit = fieldArg.split(valueSeparator);
-            field = fieldsByName[fieldArgSplit[0]];
+            const fieldName = fieldArgSplit[0];
+            if (!(fieldName in fieldsByName)) {
+                throw new Error(`Unknown field '${fieldName}'`)
+            }
+            field = fieldsByName[fieldName];
             value = fieldArgSplit[1];
             inKwargs = true;
         } else {
@@ -81,6 +102,16 @@ export function configFromArgs<C>(args: string, fields: Field[], fieldsSeparator
     return configFromObject(configData, fields);
 }
 
+/**
+ * Create an object from the given data for the given {@link Field fields}.
+ * 
+ * The datas keys are the field names and the values are the field values to be parsed.
+ * 
+ * @param data The data to parse the object from
+ * @param fields The fields to retrieve and parse the data entries
+ * 
+ * @throws An error, if a field value can not be parsed.
+ */
 export function configFromObject<C>(data: Dict<string>, fields: Field[]): C {
     const fieldsByName: Dict<Field> = {};
     fields.forEach(f => fieldsByName[f.name] = f);
@@ -98,6 +129,11 @@ export function configFromObject<C>(data: Dict<string>, fields: Field[]): C {
     return config;
 }
 
+/**
+ * Parse the given string as number and throw an error if the result is `NaN`.
+ * 
+ * @throws An error, if the number can not be parsed.
+ */
 export function parseNumber(number: string): number {
     const value = Number(number);
     if (isNaN(value)) {
@@ -114,6 +150,9 @@ export function decapitalize(s: string): string {
     return s[0].toLowerCase() + s.substring(1);
 }
 
+/**
+ * Utility method to create the string representation of an {@link Area}.
+ */
 export function areaToString(area: Area): string {
     let row_strings: string[] = [];
     row_strings.push("┏" + "━".repeat(area.width * 2 + 1) + "┓");
@@ -129,7 +168,6 @@ export function areaToString(area: Area): string {
     return row_strings.join("\n");
 }
 
-// TODO Use tile set instead of hard coded symbols
 function _symbolFor(tile: Tile): string {
     if (tile === Tile.Empty) {
         return "╳";

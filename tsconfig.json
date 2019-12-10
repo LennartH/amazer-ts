@@ -28,6 +28,7 @@
   "typedocOptions": {
     "mode": "modules",
     "excludePrivate": true,
+    "excludeNotExported": true,
     "out": "docs"
   },
   "exclude": [
