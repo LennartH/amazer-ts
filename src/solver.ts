@@ -2,6 +2,17 @@ import { Area, Tile } from "./domain/area";
 import { Point, Vector, Direction } from "./domain/common";
 
 
+/**
+ * Searches for the shortest path from `s` to `t` and returns a list of {@link Direction directions}
+ * to get from `s` to `t` or `undefined`, if no path could be found.
+ * 
+ * @param area The area to search
+ * @param s The start point
+ * @param t The target point
+ * @param isWalkable Predicate to decide if a {@link Tile} can be walked. Defaults to {@link Tile.passable}.
+ * 
+ * @returns A list of {@link Direction directions} to get from `s` to `t` or `undefined`, if no path could be found.
+ */
 export function findPath(area: Area, s: Point, t: Point, isWalkable?: (t: Tile) => boolean): Direction[] | undefined {
     isWalkable = isWalkable || (t => t.passable);
     const start = Vector.from(s);
