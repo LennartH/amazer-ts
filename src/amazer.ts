@@ -139,6 +139,14 @@ export class ConfigBuilder {
         return this;
     }
 
+    /**
+     * Creates a new {@link Config} with the current values. The config builder can be used
+     * afterwards to create additional configs without modifying the ones already created.
+     * 
+     * @throws An error if the size has not been set
+     * @throws An error if either width or height are 0
+     * @throws An error if no generator has been set
+     */
     build(): Config {
         if (this._size === undefined || this._size.height === 0 || this._size.width === 0) {
             throw new Error(`Invalid size ${this._size}: Must be set and have values > 0`)
@@ -147,7 +155,7 @@ export class ConfigBuilder {
             throw new Error("No generator has been set")
         }
 
-        return new Config(this._size, this._generator, this._modifiers);
+        return new Config({...this._size}, this._generator, [...this._modifiers]);
     }
 }
 

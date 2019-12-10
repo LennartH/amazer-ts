@@ -1,20 +1,44 @@
 import { Area, Tile } from "./domain/area";
 
 
+/**
+ * Utility interface for fields of {@link GeneratorConfig} or {@link ModifierConfig}.
+ */
 export interface Field {
     name: string,
     parser: Parser<any>
 }
 
+/**
+ * Utility interface specifying a function that parses a given string to a value.
+ */
 export interface Parser<T> {
     (value: string): T
 }
 
+/**
+ * Utility interface for better control of an objects content.
+ */
 export interface Dict<T> {
     [name: string]: T
 }
 
-export function configFrom<C>(data: any, fields: Field[]): C {
+/**
+ * Create an object from the given data for the given {@link Field fields}.
+ * 
+ * The data can be a string where the fields are separated by `,`: `"value1, value2, field1=value3, field2=value4"`
+ * The values are mapped to the fields by position or by name, if provided.
+ * 
+ * The data can also be a {@link Dict Dict<string>}, where the keys are the field names and the values are the field
+ * values to be parsed.
+ * 
+ * @param data The data to generate the object from
+ * @param fields The fields to retrieve and parse the date entries
+ * 
+ * @throws An error if data is a string and positional arguments are used after keyword arguments.
+ */
+// TODO Write tests
+export function configFrom<C>(data: string | Dict<string>, fields: Field[]): C {
     if (typeof data === "string") {
         return configFromArgs(data, fields);
     } else {
