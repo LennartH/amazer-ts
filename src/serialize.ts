@@ -1,18 +1,40 @@
 import { Area, Tile } from "./domain/area";
 
+/**
+ * Set of functions to serialize and deserialize {@link Area}.
+ */
 export namespace serialize {
+    /**
+     * Serializes the given {@link Area} {@link toBytes to bytes} and encodes
+     * the data as base64.
+     */
     export function toBase64(area: Area): string {
         return Buffer.from(toBytes(area)).toString("base64");
     }
 
+    /**
+     * Serializes the given {@link Area} to bytes.
+     * 
+     * The first 4 byte represent the width and height. Each following bit
+     * represents if the {@link Tile} is passable, going from `(0, 0)` to
+     * `(width - 1, height - 1)`.
+     */
     export function toBytes(area: Area): Uint8Array {
         return areaToBytes(area);
     }
 
+    /**
+     * Deserializes an {@link Area} from a base64 encoded string that was 
+     * serialized with {@link toBase64}.
+     */
     export function fromBase64(data: string): Area {
         return fromBytes(Buffer.from(data, "base64"));
     }
 
+    /**
+     * Deserializes an {@link Area} from a byte array that was 
+     * serialized with {@link toBytes}.
+     */
     export function fromBytes(bytes: Uint8Array): Area {
         return bytesToArea(bytes);
     }
