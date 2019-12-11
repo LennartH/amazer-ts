@@ -58,11 +58,11 @@ export class Config {
 
 // TODO Allow simple values for configuration
 /**
- * Builder for {@link Config amazer configs}.
+ * Builder for {@link Amazer amazer instances}.
  * 
  * Example usage:
  * ```typescript
- * const config: Config = new ConfigBuilder()
+ * const amazer: Amazer = new ConfigBuilder()
  *      .withSize({width: 10, height: 10})
  *      .using(RandomizedPrim)
  *      .andModifier(Emmure)
@@ -70,28 +70,28 @@ export class Config {
  *      .build()
  * ```
  */
-export class ConfigBuilder {
+export class AmazerBuilder {
     private _size: Size | undefined;
     private _generator: GeneratorWithConfig<any> | undefined;
     private _modifiers: ModifierWithConfig<any>[] = [];
 
     /**
-     * Sets configs size.
+     * Sets the areas size.
      * 
      * @returns This instance for method chaining.
      */
-    withSize(size: Size): ConfigBuilder {
+    withSize(size: Size): AmazerBuilder {
         this._size = size;
         return this;
     }
 
 
     /**
-     * Sets configs width.
+     * Sets the areas width.
      * 
      * @returns This instance for method chaining.
      */
-    withWidth(width: number): ConfigBuilder {
+    withWidth(width: number): AmazerBuilder {
         if (this._size === undefined) {
             this._size = {width: 0, height: 0};
         }
@@ -101,11 +101,11 @@ export class ConfigBuilder {
 
 
     /**
-     * Sets configs height.
+     * Sets the areas height.
      * 
      * @returns This instance for method chaining.
      */
-    withHeight(height: number): ConfigBuilder {
+    withHeight(height: number): AmazerBuilder {
         if (this._size === undefined) {
             this._size = {width: 0, height: 0};
         }
@@ -121,7 +121,7 @@ export class ConfigBuilder {
      * 
      * @returns This instance for method chaining.
      */
-    using<C extends GeneratorConfig>(generator: AreaGenerator<C>, config?: C | undefined): ConfigBuilder {
+    using<C extends GeneratorConfig>(generator: AreaGenerator<C>, config?: C | undefined): AmazerBuilder {
         this._generator = {generator: generator, config: config};
         return this;
     }
@@ -134,14 +134,14 @@ export class ConfigBuilder {
      * 
      * @returns This instance for method chaining.
      */
-    andModifier<C extends ModifierConfig>(modifier: AreaModifier<C>, config?: C | undefined): ConfigBuilder {
+    andModifier<C extends ModifierConfig>(modifier: AreaModifier<C>, config?: C | undefined): AmazerBuilder {
         this._modifiers.push({modifier: modifier, config: config});
         return this;
     }
 
     /**
-     * Creates a new {@link Config} with the current values. The config builder can be used
-     * afterwards to create additional configs without modifying the ones already created.
+     * Creates a new {@link Amazer} with the current config. The builder can be used
+     * afterwards to create additional instances without modifying the ones already created.
      * 
      * @throws An error, if the size has not been set
      * @throws An error, if either width or height are 0
@@ -182,16 +182,16 @@ export class Amazer {
 /**
  * Global entrypoint for the amazer library.
  * 
- * Creates a new {@link Amazer} instance for the given {@link Config} or a new {@link ConfigBuilder},
+ * Creates a new {@link Amazer} instance for the given {@link Config} or a new {@link AmazerBuilder},
  * if no {@link Config} is provided.
  * 
  * @param config The amazer config
  * 
- * @returns A new {@link Amazer}, if a config is given, a new {@link ConfigBuilder} otherwhise.
+ * @returns A new {@link Amazer}, if a config is given, a new {@link AmazerBuilder} otherwhise.
  */
-export default function amazer(config?: Config): Amazer | ConfigBuilder {
+export default function amazer(config?: Config): Amazer | AmazerBuilder {
     if (config === undefined) {
-        return new ConfigBuilder();
+        return new AmazerBuilder();
     } else {
         return new Amazer(config);
     }

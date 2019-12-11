@@ -7,18 +7,68 @@ import { recursiveBacktrack } from "./simple";
 import { Field, parseNumber } from "../util";
 
 
+const defaultMinSizeFactor = 0.04;
+const defaultMaxSizeFactor = 0.1;
+const minMinRoomSize = 3;
+const minMaxRoomSize = 5;
+const defaultRoomPlacementAttemptsFactor = 0.5;
+const maximumDefaultRoomPlacementAttempts = 1000;
+
 export interface NystromConfig extends GeneratorConfig {
+    /**
+     * The mininum room size. Defaults to 4% of `(area.width + area.height) / 2`
+     * with an absolute minimum of 3.
+     */
     readonly minRoomSize?: Size;
+    /**
+     * The maximum room size. Defaults to 10% of `(area.width + area.height) / 2`
+     * with an absolute minimum of 5.
+     */
     readonly maxRoomSize?: Size;
+    /**
+     * The number of room placement attempts. Defaults to 50% of `area.width * area.height`
+     * with an absolute maximum of 1000.
+     */
     readonly roomPlacementAttempts?: number;
 }
 
-export const NystromConfigFields: Field[] = [
+const NystromConfigFields: Field[] = [
     {name: "roomPlacementAttempts", parser: parseNumber},
     {name: "minRoomSize", parser: Size.fromString},
     {name: "maxRoomSize", parser: Size.fromString},
 ]
 
+/**
+ * Area generation algorithm based on this
+ * {@link http://journal.stuffwithstuff.com/2014/12/21/rooms-and-mazes/ article}
+ * by Bob Nystrom. 
+ * 
+ * Generates dense, perfect areas with rooms. Uses {@link RecursiveBacktracker} to
+ * fill the space between rooms. For example:
+ * ```
+ * ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+ * ┃       #       #               ┃
+ * ┃       #       # #   # # # #   ┃
+ * ┃                           #   ┃
+ * ┃ # # # #       #           #   ┃
+ * ┃               #           #   ┃
+ * ┃   # # # # # # #           #   ┃
+ * ┃   #       #   #           #   ┃
+ * ┃   #       #   # # # # # # #   ┃
+ * ┃   #       #       #   #       ┃
+ * ┃   # #   # #       #   #   # # ┃
+ * ┃                   #           ┃
+ * ┃ # #   #   # # #   # # # # #   ┃
+ * ┃       #       #   #           ┃
+ * ┃   # # #       #   #           ┃
+ * ┃       #       #   #           ┃
+ * ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+ * ```
+ * 
+ * @see {@link NystromConfig} for the default configuration
+ * @see {@link BreakPassages} to add cycles
+ * @see {@link RemoveDeadends} to remove all or a percentage of deadends
+ */
 export const Nystrom: AreaGenerator<NystromConfig> = nystrom;
 registerGenerator(Nystrom, NystromConfigFields)
 
@@ -132,11 +182,6 @@ interface SectionLink {
 }
 
 class _NystromConfig implements NystromConfig {
-    private static readonly defaultMinSizeFactor = 0.04;
-    private static readonly defaultMaxSizeFactor = 0.1;
-    private static readonly minMinRoomSize = 3;
-    private static readonly minMaxRoomSize = 5;
-
     readonly size: Size;
     readonly minRoomSize: Size;
     readonly maxRoomSize: Size;
@@ -146,26 +191,28 @@ class _NystromConfig implements NystromConfig {
         this.size = config.size;
         this.minRoomSize = config.minRoomSize || this.defaultMinRoomSize();
         this.maxRoomSize = config.maxRoomSize || this.defaultMaxRoomSize();
-        this.roomPlacementAttempts = config.roomPlacementAttempts || Math.min(config.size.width * config.size.height * 0.5, 1000);
+        this.roomPlacementAttempts = config.roomPlacementAttempts || Math.min(
+            config.size.width * config.size.height * defaultRoomPlacementAttemptsFactor, maximumDefaultRoomPlacementAttempts
+        );
     }
 
     private defaultMinRoomSize(): Size {
         const baseSize = Math.round((this.size.width + this.size.height) * 0.5);
-        const width = baseSize * _NystromConfig.defaultMinSizeFactor;
-        const height = baseSize * _NystromConfig.defaultMinSizeFactor;
+        const width = baseSize * defaultMinSizeFactor;
+        const height = baseSize * defaultMinSizeFactor;
         return {
-            width: Math.max(_NystromConfig.minMinRoomSize, width),
-            height: Math.max(_NystromConfig.minMinRoomSize, height)
+            width: Math.max(minMinRoomSize, width),
+            height: Math.max(minMinRoomSize, height)
         };
     }
 
     private defaultMaxRoomSize(): Size {
         const baseSize = Math.round((this.size.width + this.size.height) * 0.5);
-        const width = baseSize * _NystromConfig.defaultMaxSizeFactor;
-        const height = baseSize * _NystromConfig.defaultMaxSizeFactor;
+        const width = baseSize * defaultMaxSizeFactor;
+        const height = baseSize * defaultMaxSizeFactor;
         return {
-            width: Math.max(_NystromConfig.minMaxRoomSize, width),
-            height: Math.max(_NystromConfig.minMaxRoomSize, height)
+            width: Math.max(minMaxRoomSize, width),
+            height: Math.max(minMaxRoomSize, height)
         };
     }
 }

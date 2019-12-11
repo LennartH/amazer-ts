@@ -4,6 +4,33 @@ import { AreaGenerator, GeneratorConfig, VisitedTile, registerGenerator } from "
 import { Direction, Vector } from "../domain/common";
 
 
+/**
+ * Area generation algorithm using on a depth first
+ * {@link https://en.wikipedia.org/wiki/Maze_generation_algorithm#Recursive_backtracker recursive backtracker}
+ * algorithm. This algorithm has no separate config.
+ * 
+ * Generates dense, perfect areas with low branching factor and
+ * many long corridors. For example:
+ * ```
+ * ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+ * ┃               #       #       ┃
+ * ┃ # # # #   # # #   #   #   #   ┃
+ * ┃           #       #       #   ┃
+ * ┃   # # # # #   # # # # # # #   ┃
+ * ┃   #       #               #   ┃
+ * ┃   #   #   #   # # # # # # #   ┃
+ * ┃       #   #   #           #   ┃
+ * ┃   # # #   #   #   # # # # #   ┃
+ * ┃       #   #   #           #   ┃
+ * ┃ # #   #   #   # # # # #   #   ┃
+ * ┃       #       #       #   #   ┃
+ * ┃   # # # # # # # # #   #   #   ┃
+ * ┃   #           #       #       ┃
+ * ┃   # # #   #   #   #   # # # # ┃
+ * ┃           #       #           ┃
+ * ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+ * ```
+ */
 export const RecursiveBacktracker: AreaGenerator<GeneratorConfig> = recursiveBacktracker;
 registerGenerator(RecursiveBacktracker);
 
@@ -15,6 +42,7 @@ function recursiveBacktracker(config: GeneratorConfig): Area {
     return area;
 }
 
+/** @ignore */
 export function recursiveBacktrack(area: Area, start: Vector) {
     let stack: VisitedTile[] = [new VisitedTile(start, Direction.straights())];
     while (stack.length > 0) {
@@ -34,6 +62,33 @@ export function recursiveBacktrack(area: Area, start: Vector) {
 }
 
 
+/**
+ * Area generation algorithm based on 
+ * {@link https://en.wikipedia.org/wiki/Maze_generation_algorithm#Randomized_Kruskal's_algorithm Randomized Kruskal's}.
+ * This algorithm has no separate config.
+ * 
+ * Generates dense, perfect areas with high branching factor and
+ * many deadends that are easy to solve. For example:
+ * ```
+ * ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+ * ┃                           #   ┃
+ * ┃ # #   # # # # # # #   # # #   ┃
+ * ┃   #       #       #   #       ┃
+ * ┃   # # #   # # #   # # #   # # ┃
+ * ┃       #   #                   ┃
+ * ┃   #   #   #   # # # # #   # # ┃
+ * ┃   #           #       #       ┃
+ * ┃ # #   #   #   # # #   #   #   ┃
+ * ┃   #   #   #       #   #   #   ┃
+ * ┃   # # # # # # #   #   # # # # ┃
+ * ┃                               ┃
+ * ┃ # #   # # #   # # # # # # # # ┃
+ * ┃       #                       ┃
+ * ┃ # # # # # #   # # # # # # #   ┃
+ * ┃               #               ┃
+ * ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+ * ```
+ */
 export const RandomizedKruskal: AreaGenerator<GeneratorConfig> = randomizedKruskal;
 registerGenerator(RandomizedKruskal);
 
@@ -86,6 +141,33 @@ function randomizedKruskal(config: GeneratorConfig): Area {
 }
 
 
+/**
+ * Area generation algorithm based on 
+ * {@link https://en.wikipedia.org/wiki/Maze_generation_algorithm#Randomized_Prim's_algorithm Randomized Prim's}.
+ * This algorithm has no separate config.
+ * 
+ * Generates dense, perfect areas with high branching factor and
+ * many deadends that are easy to solve. For example:
+ * ```
+ * ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+ * ┃   #   #   #           #   #   ┃
+ * ┃   #   #   # # #   # # #   #   ┃
+ * ┃           #   #           #   ┃
+ * ┃ # # # #   #   # # #   # # #   ┃
+ * ┃                       #   #   ┃
+ * ┃ # # # # # # # #   #   #   #   ┃
+ * ┃   #       #       #   #       ┃
+ * ┃   # # #   # # #   # # #   # # ┃
+ * ┃   #   #   #   #       #       ┃
+ * ┃   #   #   #   #   # # # # #   ┃
+ * ┃   #   #   #           #       ┃
+ * ┃   #   #   # # #   # # #   # # ┃
+ * ┃           #                   ┃
+ * ┃ # # # #   # # #   #   #   # # ┃
+ * ┃                   #   #       ┃
+ * ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+ * ```
+ */
 export const RandomizedPrim: AreaGenerator<GeneratorConfig> = randomizedPrim;
 registerGenerator(RandomizedPrim);
 
@@ -130,6 +212,10 @@ function randomizedPrim(config: GeneratorConfig): Area {
 }
 
 
+/**
+ * Generates a completely random {@link Area}, where each
+ * tile has a 50/50 change to be floor or wall.
+ */
 export const RandomArea: AreaGenerator<GeneratorConfig> = random;
 registerGenerator(RandomArea);
 
