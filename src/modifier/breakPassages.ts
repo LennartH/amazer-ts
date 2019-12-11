@@ -8,15 +8,46 @@ import { Field, parseNumber } from "../util";
 
 
 export interface BreakPassagesConfig extends ModifierConfig {
+    /**
+     * The targeted amount of walls to remove. Defaults to
+     * `(area.width + area.height) / 2`.
+     */
     readonly amount?: number;
+    /**
+     * The mininum distance of the path between the tiles
+     * connected by a removed wall. Defaults to 
+     * `Math.sqrt(area.width * area.height)`.
+     */
     readonly minimumShortcutDistance?: number;
 }
 
-export const BreakPassagesConfigFields: Field[] = [
+const BreakPassagesConfigFields: Field[] = [
     {name: "amount", parser: parseNumber},
     {name: "minimumShortcutDistance", parser: parseNumber},
 ]
 
+/**
+ * Replaces {@link BreakPassagesConfig.amount} random wall tiles that have
+ * exactly 2 floor tiles as neighbours with floor tiles. The path length
+ * between the 2 floor tiles must be greater equals than
+ * {@link BreakPassagesConfig.minimumShortcutDistance}.
+ * 
+ * It is possible than less wall tiles than the targeted amount are replaced,
+ * if the minimum shortcut distance is too large. 
+ * 
+ * Example:
+ * ```
+ * ┏━━━━━━━━━━━┓    ┏━━━━━━━━━━━┓ 
+ * ┃           ┃    ┃           ┃
+ * ┃   # # # # ┃    ┃   #   # # ┃
+ * ┃   #       ┃ => ┃   #       ┃
+ * ┃   # # #   ┃    ┃   # # #   ┃
+ * ┃           ┃    ┃           ┃
+ * ┗━━━━━━━━━━━┛    ┗━━━━━━━━━━━┛
+ * ```
+ * 
+ * @returns The same, but modified area instance.
+ */
 export const BreakPassages: AreaModifier<BreakPassagesConfig> = breakPassages;
 registerModifier(BreakPassages, BreakPassagesConfigFields);
 

@@ -2,6 +2,26 @@ import { AreaModifier, ModifierConfig, registerModifier } from "./base";
 import { Area, Tile } from "../domain/area";
 import { Direction, Vector } from "../domain/common";
 
+/**
+ * Surrounds an area with a solid wall, which may increase the areas size.
+ * This modifier has no separate config.
+ * 
+ * Edges that already are solid (only consist of wall tiles) are skipped.
+ * 
+ * Example:
+ * ```
+ * ┏━━━━━━━━━┓     ┏━━━━━━━━━━━┓
+ * ┃       # ┃     ┃ # # # # # ┃
+ * ┃ # #   # ┃     ┃ #       # ┃
+ * ┃       # ┃  => ┃ # # #   # ┃
+ * ┃ # # # # ┃     ┃ #       # ┃
+ * ┗━━━━━━━━━┛     ┃ # # # # # ┃
+ *                 ┗━━━━━━━━━━━┛ 
+ * ```  
+ * 
+ * @returns A new {@link Area} instance that is completely surrounded
+ *      by wall tiles.
+ */
 export const Emmure: AreaModifier<ModifierConfig> = emmure;
 registerModifier(Emmure);
 

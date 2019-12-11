@@ -157,6 +157,15 @@ export class AmazerBuilder {
 
         return new Config({...this._size}, this._generator, [...this._modifiers]);
     }
+
+    /**
+     * Method stub to ease usage of {@link amazer amazer entrypoint}.
+     * 
+     * @ignore
+     */
+    generate(): Area {
+        throw new Error("Not implemented")
+    }
 }
 
 /**
