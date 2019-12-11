@@ -18,7 +18,7 @@ export interface AreaGenerator<C extends GeneratorConfig> {
     (config: C): Area;
 }
 
-/** Helper interface for a {@link AreaGenerator} and its config. */
+/** Helper interface for an {@link AreaGenerator} and its config. */
 export interface GeneratorWithConfig<C extends GeneratorConfig> {
     readonly generator: AreaGenerator<C>;
     readonly config?: C;
@@ -84,11 +84,11 @@ export function parseGenerator<C extends GeneratorConfig>(data: any): GeneratorW
 
     const _generator = generator<C>(generatorName);
     let config: any = undefined;
-    if (configData !== undefined && _configFields.hasOwnProperty(generatorName)) {
+    if (configData !== undefined && _configFields.hasOwnProperty(_generator.name)) {
         try {
-            config = configFrom(configData, _configFields[generatorName]);
+            config = configFrom(configData, _configFields[_generator.name]);
         } catch (error) {
-            throw new Error(`Error parsing generator ${_generator.name}: ${error.message}`);
+            throw new Error(`Error parsing config for generator ${generatorName}: ${error.message}`);
         }
     }
     return {generator: _generator, config: config};

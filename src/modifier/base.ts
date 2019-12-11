@@ -1,12 +1,18 @@
 import { Area } from "../domain/area";
 import { Field, configFrom, decapitalize, Dict } from "../util";
 
+/**
+ * Placeholder interface for general {@link AreaModifier} config
+ * attributes.
+ */
 export interface ModifierConfig { }
 
+/** Functional interface for area modifiers. */
 export interface AreaModifier<C extends ModifierConfig> {
     (area: Area, config: C): Area;
 }
 
+/** Helper interface for an {@link AreaModifier} and its config. */
 export interface ModifierWithConfig<C extends ModifierConfig> {
     readonly modifier: AreaModifier<C>;
     readonly config?: C;
@@ -15,14 +21,17 @@ export interface ModifierWithConfig<C extends ModifierConfig> {
 const _modifiers: Dict<AreaModifier<any>> = {};
 const _configFields: Dict<Field[]> = {};
 
-export function modifiers(): Array<[AreaModifier<any>, Field[] | undefined]> {
-    let result: Array<[AreaModifier<any>, Field[] | undefined]> = [];
-    for (let name in _modifiers) {
-        result.push([_modifiers[name], _configFields[name]]);
-    }
-    return result;
-}
 
+/**
+ * Registers the given {@link AreaModifier} and the fields describing
+ * its config (without the fields in {@link ModifierConfig}). This allows
+ * other utility methods to retrieve the registered modifier and construct
+ * its config.
+ * 
+ * @see {@link modifiers}
+ * @see {@link modifier}
+ * @see {@link parseModifier}
+ */
 export function registerModifier(modifier: AreaModifier<any>, configFields?: Field[] | undefined) {
     const modifierName = modifier.name;
     _modifiers[modifierName] = modifier;
@@ -31,6 +40,31 @@ export function registerModifier(modifier: AreaModifier<any>, configFields?: Fie
     }
 }
 
+/**
+ * @returns A list of all {@link registerModifier registered} and their config
+ *      {@link Field fields} (if provided) as tuples.
+ */
+export function modifiers(): Array<[AreaModifier<any>, Field[] | undefined]> {
+    let result: Array<[AreaModifier<any>, Field[] | undefined]> = [];
+    for (let name in _modifiers) {
+        result.push([_modifiers[name], _configFields[name]]);
+    }
+    return result;
+}
+
+/**
+ * Parses the given data as {@link AreaModifier} with config (if possible).
+ * 
+ * The given data must be string with format `<modifier name>[:<config data>]`
+ * or an object, where the first key is the modifier name and its value is
+ * the config data.
+ * 
+ * {@link configFrom} is used to create a config object from the config data.
+ * 
+ * @param data The generator data to be parsed
+ * 
+ * @throws An error, if the config data can not be parsed.
+ */
 export function parseModifier<C extends ModifierConfig>(arg: any): ModifierWithConfig<C> {
     let modifierName: string;
     let configData: any;
@@ -45,16 +79,24 @@ export function parseModifier<C extends ModifierConfig>(arg: any): ModifierWithC
 
     const _modifier = modifier<C>(modifierName);
     let config: any = undefined;
-    if (configData !== undefined && _configFields.hasOwnProperty(modifierName)) {
+    if (configData !== undefined && _configFields.hasOwnProperty(_modifier.name)) {
         try {
-            config = configFrom(configData, _configFields[modifierName]);
+            config = configFrom(configData, _configFields[_modifier.name]);
         } catch (error) {
-            throw new Error(`Error parsing generator ${_modifier.name}: ${error.message}`);
+            throw new Error(`Error parsing config for modifier ${modifierName}: ${error.message}`);
         }
     }
     return {modifier: _modifier, config: config};
 }
 
+
+/**
+ * @param name The modifiers name (can be capitalized)
+ * 
+ * @returns The {@link AreaModifier} with the given name.
+ * 
+ * @throws An error, if no modifier with the given name can be found.
+ */
 export function modifier<C extends ModifierConfig>(name: string): AreaModifier<C> {
     let cleanedName = decapitalize(name);
     const modifier = _modifiers[cleanedName];
