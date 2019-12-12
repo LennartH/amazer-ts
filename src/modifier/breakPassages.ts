@@ -32,7 +32,7 @@ const BreakPassagesConfigFields: Field[] = [
  * between the 2 floor tiles must be greater equals than
  * {@link BreakPassagesConfig.minimumShortcutDistance}.
  * 
- * It is possible than less wall tiles than the targeted amount are replaced,
+ * It is possible that less wall tiles than the targeted amount are replaced,
  * if the minimum shortcut distance is too large. 
  * 
  * Example:
