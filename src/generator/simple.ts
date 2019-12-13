@@ -32,7 +32,7 @@ import { Direction, Vector } from "../domain/common";
  * ```
  */
 export const RecursiveBacktracker: AreaGenerator<GeneratorConfig> = recursiveBacktracker;
-registerGenerator(RecursiveBacktracker);
+registerGenerator("RecursiveBacktracker", RecursiveBacktracker);
 
 function recursiveBacktracker(config: GeneratorConfig): Area {
     const area = new Area(config.size, Tile.Wall);
@@ -90,7 +90,7 @@ export function recursiveBacktrack(area: Area, start: Vector) {
  * ```
  */
 export const RandomizedKruskal: AreaGenerator<GeneratorConfig> = randomizedKruskal;
-registerGenerator(RandomizedKruskal);
+registerGenerator("RandomizedKruskal", RandomizedKruskal);
 
 function randomizedKruskal(config: GeneratorConfig): Area {
     const area = new Area(config.size);
@@ -169,7 +169,7 @@ function randomizedKruskal(config: GeneratorConfig): Area {
  * ```
  */
 export const RandomizedPrim: AreaGenerator<GeneratorConfig> = randomizedPrim;
-registerGenerator(RandomizedPrim);
+registerGenerator("RandomizedPrim", RandomizedPrim);
 
 function randomizedPrim(config: GeneratorConfig): Area {
     const area = new Area(config.size, Tile.Wall);
@@ -217,7 +217,7 @@ function randomizedPrim(config: GeneratorConfig): Area {
  * tile has a 50/50 change to be floor or wall.
  */
 export const RandomArea: AreaGenerator<GeneratorConfig> = random;
-registerGenerator(RandomArea);
+registerGenerator("RandomArea", RandomArea);
 
 function random(config: GeneratorConfig): Area {
     const area = new Area(config.size);

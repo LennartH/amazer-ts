@@ -1,7 +1,7 @@
 import _ from "lodash";
 import { Area } from "../domain/area";
 import { Vector, Direction, Size } from "../domain/common";
-import { Field, configFrom, decapitalize, Dict } from "../util";
+import { Field, configFrom, Dict } from "../util";
 
 
 /**
@@ -24,6 +24,13 @@ export interface GeneratorWithConfig<C extends GeneratorConfig> {
     readonly config?: C;
 }
 
+/** Helper interface for a registered {@link AreaGenerator}. */
+export interface RegisteredGenerator<C extends GeneratorConfig> {
+    readonly name: string;
+    readonly generator: AreaGenerator<C>;
+    readonly configFields?: Field[];
+}
+
 const _generators: Dict<AreaGenerator<any>> = {};
 const _configFields: Dict<Field[]> = {};
 
@@ -37,11 +44,10 @@ const _configFields: Dict<Field[]> = {};
  * @see {@link generator}
  * @see {@link parseGenerator}
  */
-export function registerGenerator(generator: AreaGenerator<any>, configFields?: Field[] | undefined) {
-    const generatorName = generator.name;
-    _generators[generatorName] = generator;
+export function registerGenerator(name: string, generator: AreaGenerator<any>, configFields?: Field[] | undefined) {
+    _generators[name] = generator;
     if (configFields !== undefined) {
-        _configFields[generatorName] = configFields;
+        _configFields[name] = configFields;
     }
 }
 
@@ -49,10 +55,14 @@ export function registerGenerator(generator: AreaGenerator<any>, configFields?: 
  * @returns A list of all {@link registerGenerator registered} and their config
  *      {@link Field fields} (if provided) as tuples.
  */
-export function generators(): Array<[AreaGenerator<any>, Field[] | undefined]> {
-    let result: Array<[AreaGenerator<any>, Field[] | undefined]> = [];
+export function generators(): RegisteredGenerator<any>[] {
+    let result: RegisteredGenerator<any>[] = [];
     for (let name in _generators) {
-        result.push([_generators[name], _configFields[name]]);
+        result.push({
+            name: name,
+            generator: _generators[name],
+            configFields: _configFields[name]
+        });
     }
     return result;
 }
@@ -95,15 +105,14 @@ export function parseGenerator<C extends GeneratorConfig>(data: any): GeneratorW
 }
 
 /**
- * @param name The generators name (can be capitalized)
+ * @param name The algorithm name
  * 
  * @returns The {@link AreaGenerator} with the given name.
  * 
  * @throws An error, if no generator with the given name can be found.
  */
 export function generator<C extends GeneratorConfig>(name: string): AreaGenerator<C> {
-    let cleanedName = decapitalize(name);
-    const generator = _generators[cleanedName];
+    const generator = _generators[name];
     if (generator === undefined) {
         throw new Error(`No generator with name ${name} could be found`);
     }

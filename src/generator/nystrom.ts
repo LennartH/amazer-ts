@@ -70,7 +70,7 @@ const NystromConfigFields: Field[] = [
  * @see {@link RemoveDeadends} to remove all or a percentage of deadends
  */
 export const Nystrom: AreaGenerator<NystromConfig> = nystrom;
-registerGenerator(Nystrom, NystromConfigFields)
+registerGenerator("Nystrom", Nystrom, NystromConfigFields)
 
 function nystrom(c: NystromConfig): Area {
     let config = new _NystromConfig(c);
