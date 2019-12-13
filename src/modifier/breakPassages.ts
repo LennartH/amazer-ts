@@ -49,7 +49,7 @@ const BreakPassagesConfigFields: Field[] = [
  * @returns The same, but modified area instance.
  */
 export const BreakPassages: AreaModifier<BreakPassagesConfig> = breakPassages;
-registerModifier(BreakPassages, BreakPassagesConfigFields);
+registerModifier("BreakPassages", BreakPassages, BreakPassagesConfigFields);
 
 function breakPassages(area: Area, config: BreakPassagesConfig): Area {
     let amount: number = config.amount || (area.width + area.height) / 2;

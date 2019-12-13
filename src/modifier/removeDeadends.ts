@@ -44,7 +44,7 @@ const DeadendTile = Tile.impassable("Deadend");
  * ```
  */
 export const RemoveDeadends: AreaModifier<RemoveDeadendsConfig> = removeDeadends;
-registerModifier(RemoveDeadends, RemoveDeadendsConfigFields);
+registerModifier("RemoveDeadends", RemoveDeadends, RemoveDeadendsConfigFields);
 
 function removeDeadends(area: Area, config: RemoveDeadendsConfig): Area {
     const collectedDeadends: Vector[] = [];

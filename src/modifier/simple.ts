@@ -23,7 +23,7 @@ import { Direction, Vector } from "../domain/common";
  *      by wall tiles.
  */
 export const Emmure: AreaModifier<ModifierConfig> = emmure;
-registerModifier(Emmure);
+registerModifier("Emmure", Emmure);
 
 function emmure(area: Area, _: ModifierConfig): Area {
     let borders: {[direction: string]: [Vector, Direction]} = {

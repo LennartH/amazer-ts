@@ -1,5 +1,5 @@
 import { Area } from "../domain/area";
-import { Field, configFrom, decapitalize, Dict } from "../util";
+import { Field, configFrom, Dict } from "../util";
 
 /**
  * Placeholder interface for general {@link AreaModifier} config
@@ -18,6 +18,13 @@ export interface ModifierWithConfig<C extends ModifierConfig> {
     readonly config?: C;
 }
 
+/** Helper interface for registered {@link AreaModifier}. */
+export interface RegisteredModifier<C extends ModifierConfig> {
+    readonly name: string;
+    readonly modifier: AreaModifier<C>;
+    readonly configFields: Field[];
+}
+
 const _modifiers: Dict<AreaModifier<any>> = {};
 const _configFields: Dict<Field[]> = {};
 
@@ -32,11 +39,10 @@ const _configFields: Dict<Field[]> = {};
  * @see {@link modifier}
  * @see {@link parseModifier}
  */
-export function registerModifier(modifier: AreaModifier<any>, configFields?: Field[] | undefined) {
-    const modifierName = modifier.name;
-    _modifiers[modifierName] = modifier;
+export function registerModifier(name: string, modifier: AreaModifier<any>, configFields?: Field[] | undefined) {
+    _modifiers[name] = modifier;
     if (configFields !== undefined) {
-        _configFields[modifierName] = configFields;
+        _configFields[name] = configFields;
     }
 }
 
@@ -44,10 +50,14 @@ export function registerModifier(modifier: AreaModifier<any>, configFields?: Fie
  * @returns A list of all {@link registerModifier registered} and their config
  *      {@link Field fields} (if provided) as tuples.
  */
-export function modifiers(): Array<[AreaModifier<any>, Field[] | undefined]> {
-    let result: Array<[AreaModifier<any>, Field[] | undefined]> = [];
+export function modifiers(): RegisteredModifier<any>[] {
+    let result: RegisteredModifier<any>[] = [];
     for (let name in _modifiers) {
-        result.push([_modifiers[name], _configFields[name]]);
+        result.push({
+            name: name,
+            modifier: _modifiers[name],
+            configFields: _configFields[name]
+        });
     }
     return result;
 }
@@ -91,15 +101,14 @@ export function parseModifier<C extends ModifierConfig>(arg: any): ModifierWithC
 
 
 /**
- * @param name The modifiers name (can be capitalized)
+ * @param name The modifiers name
  * 
  * @returns The {@link AreaModifier} with the given name.
  * 
  * @throws An error, if no modifier with the given name can be found.
  */
 export function modifier<C extends ModifierConfig>(name: string): AreaModifier<C> {
-    let cleanedName = decapitalize(name);
-    const modifier = _modifiers[cleanedName];
+    const modifier = _modifiers[name];
     if (modifier === undefined) {
         throw new Error(`No modifier with name ${name} could be found`);
     }
