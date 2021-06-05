@@ -29,20 +29,20 @@
   },
   "homepage": "https://github.com/LennartH/amazer-ts#readme",
   "devDependencies": {
-    "@types/jest": "^24.0.19",
-    "@types/lodash": "^4.14.144",
-    "@types/node": "^12.11.1",
-    "@typescript-eslint/eslint-plugin": "^2.4.0",
-    "@typescript-eslint/parser": "^2.4.0",
-    "eslint": "^6.5.1",
+    "@types/jest": "^24.9.1",
+    "@types/lodash": "^4.14.170",
+    "@types/node": "^12.20.14",
+    "@typescript-eslint/eslint-plugin": "^2.34.0",
+    "@typescript-eslint/parser": "^2.34.0",
+    "eslint": "^6.8.0",
     "eslint-config-google": "^0.14.0",
-    "jest": "^24.9.0",
-    "ts-jest": "^24.1.0",
-    "ts-node": "^8.4.1",
-    "typedoc": "^0.15.4",
-    "typescript": "^3.6.4"
+    "jest": "^27.0.4",
+    "ts-jest": "^24.3.0",
+    "ts-node": "^8.10.2",
+    "typedoc": "^0.15.8",
+    "typescript": "^3.9.9"
   },
   "dependencies": {
-    "lodash": "^4.17.15"
+    "lodash": "^4.17.21"
   }
 }
